@@ -23,7 +23,12 @@ class ManageCalendarBlocks extends ManageRecords
     protected function getHeaderActions(): array
     {
         return [
-            CreateAction::make(),
+            CreateAction::make()
+                ->label('Blokir Tanggal')
+                ->modalHeading('Buat Blokir Tanggal')
+                ->modalSubmitActionLabel('Blokir')
+                ->createAnother(false)
+                ->modalCancelActionLabel('Batal'),
         ];
     }
 }

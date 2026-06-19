@@ -18,56 +18,61 @@ use Filament\Tables\Table;
 
 class BookingResource extends Resource
 {
-    protected static ?string $model = Booking::class;
+  protected static ?string $model = Booking::class;
 
-    protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedClipboardDocumentList;
+  protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedClipboardDocumentList;
 
-    protected static ?string $recordTitleAttribute = 'booking_code';
+  protected static ?string $recordTitleAttribute = 'booking_code';
 
-    public static function getNavigationLabel(): string
-    {
-        return 'Data Booking';
-    }
+  protected static ?string $modelLabel = 'Data Booking';
 
-    public static function getNavigationGroup(): ?string
-    {
-        return 'Manajemen Pemesanan';
-    }
+  protected static ?string $pluralModelLabel = 'Data Booking';
 
-    public static function getNavigationSort(): ?int
-    {
-        return 1;
-    }
+  protected static ?string $label = 'Data Booking';
 
-    public static function form(Schema $schema): Schema
-    {
-        return BookingForm::configure($schema);
-    }
+  public static function getNavigationLabel(): string
+  {
+    return 'Data Booking';
+  }
 
-    public static function infolist(Schema $schema): Schema
-    {
-        return BookingInfolist::configure($schema);
-    }
+  public static function getNavigationGroup(): ?string
+  {
+    return 'Manajemen Pemesanan';
+  }
 
-    public static function table(Table $table): Table
-    {
-        return BookingsTable::configure($table);
-    }
+  public static function getNavigationSort(): ?int
+  {
+    return 1;
+  }
 
-    public static function getRelations(): array
-    {
-        return [
-            //
-        ];
-    }
+  public static function form(Schema $schema): Schema
+  {
+    return BookingForm::configure($schema);
+  }
 
-    public static function getPages(): array
-    {
-        return [
-            'index' => ListBookings::route('/'),
+  public static function infolist(Schema $schema): Schema
+  {
+    return BookingInfolist::configure($schema);
+  }
 
-            'view' => ViewBooking::route('/{record}'),
-            'edit' => EditBooking::route('/{record}/edit'),
-        ];
-    }
+  public static function table(Table $table): Table
+  {
+    return BookingsTable::configure($table);
+  }
+
+  public static function getRelations(): array
+  {
+    return [
+      //
+    ];
+  }
+
+  public static function getPages(): array
+  {
+    return [
+      'index' => ListBookings::route('/'),
+      'view' => ViewBooking::route('/{record}'),
+      // 'edit' => EditBooking::route('/{record}/edit'),
+    ];
+  }
 }

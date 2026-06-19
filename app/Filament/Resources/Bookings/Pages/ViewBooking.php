@@ -3,8 +3,8 @@
 namespace App\Filament\Resources\Bookings\Pages;
 
 use App\Filament\Resources\Bookings\BookingResource;
-use Filament\Actions\EditAction;
 use Filament\Resources\Pages\ViewRecord;
+use Filament\Support\Enums\Width;
 
 class ViewBooking extends ViewRecord
 {
@@ -13,7 +13,12 @@ class ViewBooking extends ViewRecord
     protected function getHeaderActions(): array
     {
         return [
-            EditAction::make(),
+            //
         ];
+    }
+
+    public function getMaxContentWidth(): Width|string|null
+    {
+        return Width::Full;
     }
 }

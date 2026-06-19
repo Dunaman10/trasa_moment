@@ -29,7 +29,13 @@ class BookingForm
                     ->required(),
                 DatePicker::make('event_date')
                     ->required(),
-                TextInput::make('booking_session')
+                Select::make('booking_session')
+                    ->label('Sesi')
+                    ->options([
+                        'pagi' => 'Sesi Pagi (09:00 - 12:00)',
+                        'siang' => 'Sesi Siang (13:00 - 16:00)',
+                        'sore' => 'Sesi Sore/Malam (17:00 - 20:00)',
+                    ])
                     ->required(),
                 Textarea::make('event_location')
                     ->required()

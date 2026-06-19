@@ -59,7 +59,7 @@ class ApiController extends Controller
         // Ambil data block libur/penuh
         $blocks = CalendarBlock::whereYear('block_date', $year)
             ->whereMonth('block_date', $month)
-            ->pluck('block_date');
+            ->get(['block_date', 'title']);
 
         // Ambil data booking aktif pada bulan & tahun tersebut
         $bookings = Booking::whereYear('event_date', $year)
@@ -68,7 +68,12 @@ class ApiController extends Controller
             ->get(['event_date', 'booking_session', 'status']);
 
         return response()->json([
-            'blocks' => $blocks,
+            'blocks' => $blocks->map(function ($b) {
+                return [
+                    'date' => $b->block_date->format('Y-m-d'),
+                    'title' => $b->title,
+                ];
+            }),
             'bookings' => $bookings->map(function ($b) {
                 return [
                     'date' => $b->event_date->format('Y-m-d'),

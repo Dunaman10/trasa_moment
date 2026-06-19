@@ -87,7 +87,10 @@ class CalendarBlockResource extends Resource
                 //
             ])
             ->recordActions([
-                EditAction::make(),
+                EditAction::make()
+                    ->modalHeading('Edit Blokir Tanggal')
+                    ->modalSubmitActionLabel('Simpan Perubahan')
+                    ->modalCancelActionLabel('Batal'),
                 DeleteAction::make(),
             ])
             ->toolbarActions([

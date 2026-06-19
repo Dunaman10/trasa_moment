@@ -13,7 +13,13 @@ class ManagePackages extends ManageRecords
     protected function getHeaderActions(): array
     {
         return [
-            CreateAction::make(),
+            CreateAction::make()
+                ->label('Tambah Paket')
+                ->modalHeading('Tambah Paket')
+                ->createAnother(false)
+                ->modalSubmitActionLabel('Tambah Paket')
+                ->modalCancelActionLabel('Batal'),
+
         ];
     }
 }

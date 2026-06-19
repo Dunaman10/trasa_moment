@@ -48,8 +48,9 @@ const TIME_SLOTS = [
 ];
 
 export default function CalendarPage({ selectedPackage, packages, onBack, onProceed }) {
-    const [currentYear, setCurrentYear] = useState(2026);
-    const [currentMonth, setCurrentMonth] = useState(5);
+    const todayDate = new Date();
+    const [currentYear, setCurrentYear] = useState(todayDate.getFullYear());
+    const [currentMonth, setCurrentMonth] = useState(todayDate.getMonth());
     const [selectedDateStr, setSelectedDateStr] = useState("");
     const [selectedTimeSlot, setSelectedTimeSlot] = useState("");
     const [apiSlotStatus, setApiSlotStatus] = useState({});
@@ -60,8 +61,14 @@ export default function CalendarPage({ selectedPackage, packages, onBack, onProc
             .then(data => {
                 const compiled = {};
                 if (data.blocks) {
-                    data.blocks.forEach(blockDate => {
-                        compiled[blockDate] = { pagi: "booked", siang: "booked", sore: "booked" };
+                    data.blocks.forEach(block => {
+                        compiled[block.date] = { 
+                            pagi: "booked", 
+                            siang: "booked", 
+                            sore: "booked",
+                            isBlocked: true,
+                            reason: block.title || "Libur Studio"
+                        };
                     });
                 }
                 if (data.bookings) {
@@ -116,14 +123,17 @@ export default function CalendarPage({ selectedPackage, packages, onBack, onProc
 
     const isPastDate = (day) => {
         if (!day) return false;
-        const targetDateObj = new Date(currentYear, currentMonth, day);
-        const currentDateObj = new Date(2026, 5, 18);
+        const targetDateObj = new Date(currentYear, currentMonth, day, 0, 0, 0, 0);
+        const currentDateObj = new Date();
+        currentDateObj.setHours(0, 0, 0, 0);
         return targetDateObj < currentDateObj;
     };
 
     const getDayAvailabilityStatus = (dateStr) => {
-        const slots = apiSlotStatus[dateStr] || { pagi: "available", siang: "available", sore: "available" };
-        const values = Object.values(slots);
+        const slots = apiSlotStatus[dateStr];
+        if (slots?.isBlocked) return "blocked";
+        if (!slots) return "available";
+        const values = Object.values(slots).filter(v => typeof v === "string");
         if (values.every(v => v === "booked")) return "booked";
         if (values.some(v => v === "booked" || v === "hold")) return "hold";
         return "available";
@@ -278,6 +288,9 @@ export default function CalendarPage({ selectedPackage, packages, onBack, onProc
                                     if (past) {
                                         cellClass = "bg-slate-50 border border-slate-100 text-slate-300 cursor-not-allowed opacity-40";
                                         dotColor = "bg-slate-200";
+                                    } else if (status === "blocked") {
+                                        cellClass = "bg-rose-50 border border-rose-200 text-rose-700 cursor-pointer active:scale-95";
+                                        dotColor = "bg-rose-500";
                                     } else if (status === "booked") {
                                         cellClass = "bg-slate-50 border border-slate-100 text-slate-300 cursor-not-allowed";
                                         dotColor = "bg-slate-300";
@@ -287,8 +300,13 @@ export default function CalendarPage({ selectedPackage, packages, onBack, onProc
                                     }
 
                                     if (isSelected && !past) {
-                                        cellClass = "bg-brand-primary border-brand-primary text-white shadow-lg shadow-brand-primary/30 scale-105 cursor-pointer";
-                                        dotColor = "bg-white";
+                                        if (status === "blocked") {
+                                            cellClass = "bg-rose-600 border-rose-600 text-white shadow-lg shadow-rose-600/30 scale-105 cursor-pointer";
+                                            dotColor = "bg-white";
+                                        } else {
+                                            cellClass = "bg-brand-primary border-brand-primary text-white shadow-lg shadow-brand-primary/30 scale-105 cursor-pointer";
+                                            dotColor = "bg-white";
+                                        }
                                     }
 
                                     return (
@@ -326,9 +344,21 @@ export default function CalendarPage({ selectedPackage, packages, onBack, onProc
 
                             <div className="p-3 sm:p-4">
                                 {selectedDateStr ? (
-                                    <div className="space-y-2.5">
-                                        {TIME_SLOTS.map((slot) => {
-                                            const dateSlots = apiSlotStatus[selectedDateStr] || { pagi: "available", siang: "available", sore: "available" };
+                                    apiSlotStatus[selectedDateStr]?.isBlocked ? (
+                                        <div className="py-6 px-4 text-center bg-rose-50 border border-rose-100 rounded-2xl space-y-3">
+                                            <div className="w-10 h-10 bg-rose-100 text-rose-600 rounded-full flex items-center justify-center mx-auto">
+                                                <Info className="w-5 h-5" />
+                                            </div>
+                                            <h4 className="font-extrabold text-sm text-rose-800">Tanggal Ini Ditutup (Libur/Penuh)</h4>
+                                            <p className="text-xs text-rose-700 leading-relaxed font-bold">
+                                                Alasan: {apiSlotStatus[selectedDateStr]?.reason || "Libur Studio"}
+                                            </p>
+                                            <p className="text-3xs text-slate-400">Silakan pilih tanggal lain yang berwarna hijau pada kalender.</p>
+                                        </div>
+                                    ) : (
+                                        <div className="space-y-2.5">
+                                            {TIME_SLOTS.map((slot) => {
+                                                const dateSlots = apiSlotStatus[selectedDateStr] || { pagi: "available", siang: "available", sore: "available" };
                                             const slotStatus = dateSlots[slot.id] || "available";
                                             const isSelected = selectedTimeSlot === slot.id;
                                             const isBooked = slotStatus === "booked";
@@ -382,6 +412,7 @@ export default function CalendarPage({ selectedPackage, packages, onBack, onProc
                                             );
                                         })}
                                     </div>
+                                    )
                                 ) : (
                                     <div className="py-10 text-center flex flex-col items-center gap-3">
                                         <CalendarIcon className="w-10 h-10 text-slate-200 animate-pulse" />
