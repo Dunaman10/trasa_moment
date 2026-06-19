@@ -359,59 +359,90 @@ export default function CalendarPage({ selectedPackage, packages, onBack, onProc
                                         <div className="space-y-2.5">
                                             {TIME_SLOTS.map((slot) => {
                                                 const dateSlots = apiSlotStatus[selectedDateStr] || { pagi: "available", siang: "available", sore: "available" };
-                                            const slotStatus = dateSlots[slot.id] || "available";
-                                            const isSelected = selectedTimeSlot === slot.id;
-                                            const isBooked = slotStatus === "booked";
-                                            const isHold = slotStatus === "hold";
-                                            const isDisabled = isBooked || isHold;
+                                                const slotStatus = dateSlots[slot.id] || "available";
+                                                const isSelected = selectedTimeSlot === slot.id;
+                                                const isBooked = slotStatus === "booked";
+                                                const isHold = slotStatus === "hold";
+                                                
+                                                // Check if the selected date is today and slot time has passed
+                                                const today = new Date();
+                                                const isDateToday = (() => {
+                                                    if (!selectedDateStr) return false;
+                                                    const [y, m, d] = selectedDateStr.split("-");
+                                                    return today.getFullYear() === Number(y) &&
+                                                           (today.getMonth() + 1) === Number(m) &&
+                                                           today.getDate() === Number(d);
+                                                })();
+                                                
+                                                const isPastTimeSlot = (() => {
+                                                    if (!isDateToday) return false;
+                                                    const currentHour = today.getHours();
+                                                    const currentMinute = today.getMinutes();
+                                                    const currentTimeMinutes = currentHour * 60 + currentMinute;
+                                                    
+                                                    // Start times cut-off: pagi = 09:00 (540m), siang = 13:00 (780m), sore = 17:00 (1020m)
+                                                    const startMinutes = {
+                                                        pagi: 9 * 60,
+                                                        siang: 13 * 60,
+                                                        sore: 17 * 60
+                                                    }[slot.id] || 0;
+                                                    
+                                                    return currentTimeMinutes >= startMinutes;
+                                                })();
+                                                
+                                                const isDisabled = isBooked || isHold || isPastTimeSlot;
 
-                                            let borderClass = "border-slate-100 hover:border-brand-primary/40 cursor-pointer active:scale-[0.98]";
-                                            let statusText = "Tersedia";
-                                            let statusColor = "text-emerald-600 bg-emerald-50";
+                                                let borderClass = "border-slate-100 hover:border-brand-primary/40 cursor-pointer active:scale-[0.98]";
+                                                let statusText = "Tersedia";
+                                                let statusColor = "text-emerald-600 bg-emerald-50";
 
-                                            if (isBooked) {
-                                                borderClass = "border-slate-100 bg-slate-50 cursor-not-allowed opacity-50";
-                                                statusText = "Penuh";
-                                                statusColor = "text-slate-400 bg-slate-100";
-                                            } else if (isHold) {
-                                                borderClass = "border-amber-100 bg-amber-50/50 cursor-not-allowed opacity-60";
-                                                statusText = "Hold";
-                                                statusColor = "text-amber-600 bg-amber-50";
-                                            }
+                                                if (isBooked) {
+                                                    borderClass = "border-slate-100 bg-slate-50 cursor-not-allowed opacity-50";
+                                                    statusText = "Penuh";
+                                                    statusColor = "text-slate-400 bg-slate-100";
+                                                } else if (isHold) {
+                                                    borderClass = "border-amber-100 bg-amber-50/50 cursor-not-allowed opacity-60";
+                                                    statusText = "Hold";
+                                                    statusColor = "text-amber-600 bg-amber-50";
+                                                } else if (isPastTimeSlot) {
+                                                    borderClass = "border-slate-100 bg-slate-50 cursor-not-allowed opacity-40";
+                                                    statusText = "Sudah Lewat";
+                                                    statusColor = "text-rose-600 bg-rose-50";
+                                                }
 
-                                            if (isSelected) {
-                                                borderClass = "border-brand-primary bg-brand-primary/5 shadow-md cursor-pointer";
-                                            }
+                                                if (isSelected) {
+                                                    borderClass = "border-brand-primary bg-brand-primary/5 shadow-md cursor-pointer";
+                                                }
 
-                                            return (
-                                                <div
-                                                    key={slot.id}
-                                                    onClick={() => !isDisabled && setSelectedTimeSlot(slot.id)}
-                                                    className={`flex items-center justify-between p-3.5 border-2 rounded-2xl transition-all duration-200 ${borderClass}`}
-                                                >
-                                                    <div className="space-y-0.5">
-                                                        <div className="flex items-center gap-2 flex-wrap">
-                                                            <h4 className={`text-xs font-bold ${isSelected ? "text-brand-primary" : "text-slate-800"}`}>
-                                                                {slot.label}
-                                                            </h4>
-                                                            <span className={`text-[9px] px-1.5 py-0.5 rounded-full font-bold ${statusColor}`}>
-                                                                {statusText}
+                                                return (
+                                                    <div
+                                                        key={slot.id}
+                                                        onClick={() => !isDisabled && setSelectedTimeSlot(slot.id)}
+                                                        className={`flex items-center justify-between p-3.5 border-2 rounded-2xl transition-all duration-200 ${borderClass}`}
+                                                    >
+                                                        <div className="space-y-0.5">
+                                                            <div className="flex items-center gap-2 flex-wrap">
+                                                                <h4 className={`text-xs font-bold ${isSelected ? "text-brand-primary" : "text-slate-800"}`}>
+                                                                    {slot.label}
+                                                                </h4>
+                                                                <span className={`text-[9px] px-1.5 py-0.5 rounded-full font-bold ${statusColor}`}>
+                                                                    {statusText}
+                                                                </span>
+                                                            </div>
+                                                            <span className="text-2xs text-slate-400 flex items-center gap-1">
+                                                                <Clock className="w-3 h-3" />
+                                                                {slot.time} · {slot.sublabel}
                                                             </span>
                                                         </div>
-                                                        <span className="text-2xs text-slate-400 flex items-center gap-1">
-                                                            <Clock className="w-3 h-3" />
-                                                            {slot.time} · {slot.sublabel}
-                                                        </span>
+                                                        <div className={`w-5 h-5 rounded-full border-2 flex items-center justify-center flex-shrink-0 transition-all ${
+                                                            isSelected ? "border-brand-primary bg-brand-primary text-white" : "border-slate-200"
+                                                        }`}>
+                                                            {isSelected && <Check className="w-3 h-3" />}
+                                                        </div>
                                                     </div>
-                                                    <div className={`w-5 h-5 rounded-full border-2 flex items-center justify-center flex-shrink-0 transition-all ${
-                                                        isSelected ? "border-brand-primary bg-brand-primary text-white" : "border-slate-200"
-                                                    }`}>
-                                                        {isSelected && <Check className="w-3 h-3" />}
-                                                    </div>
-                                                </div>
-                                            );
-                                        })}
-                                    </div>
+                                                );
+                                            })}
+                                        </div>
                                     )
                                 ) : (
                                     <div className="py-10 text-center flex flex-col items-center gap-3">

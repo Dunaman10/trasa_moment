@@ -12,7 +12,10 @@ return new class extends Migration
             $table->id();
             $table->string('title');
             $table->text('subtitle');
-            $table->string('image_path');
+            $table->string('image_path_1');
+            $table->string('image_path_2');
+            $table->string('image_path_3');
+            $table->string('image_path_4');
             $table->string('cta_text')->default('Booking Sekarang');
             $table->boolean('is_active')->default(true);
             $table->timestamps();

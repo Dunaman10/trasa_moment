@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import { Star, Quote } from "lucide-react";
 
 const TESTIMONIALS = [
@@ -26,13 +26,29 @@ const TESTIMONIALS = [
 ];
 
 export default function Testimonials({ testimonials }) {
-    const displayList = testimonials && testimonials.length > 0 ? testimonials.map((t, idx) => ({
-        name: t.client_name,
-        role: `Klien ${t.event_category || 'Event'}`,
-        quote: t.review_text,
-        stars: t.rating || 5,
-        avatar: t.client_avatar_path || t.avatar,
-    })) : TESTIMONIALS;
+    const [currentPage, setCurrentPage] = useState(0);
+    const itemsPerPage = 3;
+
+    const displayList = testimonials && testimonials.length > 0 ? testimonials.map((t, idx) => {
+        const categoryLabels = {
+            wedding: 'Pernikahan (Wedding)',
+            graduation: 'Wisuda (Graduation)',
+            personal: 'Sesi Personal',
+            event: 'Acara (Event)'
+        };
+        const friendlyCategory = categoryLabels[t.event_category] || t.event_category || 'Event';
+        return {
+            name: t.client_name,
+            role: `Klien ${friendlyCategory}`,
+            quote: t.review_text,
+            stars: t.rating || 5,
+            avatar: t.client_avatar_path || t.avatar,
+        };
+    }) : TESTIMONIALS;
+
+    const totalPages = Math.ceil(displayList.length / itemsPerPage);
+    const activePage = currentPage >= totalPages ? 0 : currentPage;
+    const paginatedList = displayList.slice(activePage * itemsPerPage, (activePage + 1) * itemsPerPage);
 
     return (
         <section className="py-20 bg-slate-50 relative overflow-hidden">
@@ -51,11 +67,11 @@ export default function Testimonials({ testimonials }) {
                 </div>
 
                 {/* Cards Grid */}
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-8 items-stretch">
-                    {displayList.map((testi, idx) => (
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-8 items-stretch transition-all duration-500 ease-in-out">
+                    {paginatedList.map((testi, idx) => (
                         <div
                             key={idx}
-                            className="bg-white rounded-3xl p-6 sm:p-8 border border-slate-100/50 shadow-md hover:shadow-xl transition-all duration-300 flex flex-col justify-between"
+                            className="bg-white rounded-3xl p-6 sm:p-8 border border-slate-100/50 shadow-md hover:shadow-xl transition-all duration-500 transform hover:-translate-y-1 flex flex-col justify-between"
                         >
                             <div className="space-y-6">
                                 {/* Stars & Quote Icon */}
@@ -93,6 +109,24 @@ export default function Testimonials({ testimonials }) {
                         </div>
                     ))}
                 </div>
+
+                {/* Pagination Indicators */}
+                {totalPages > 1 && (
+                    <div className="flex justify-center items-center gap-2.5 mt-12">
+                        {[...Array(totalPages)].map((_, pageIdx) => (
+                            <button
+                                key={pageIdx}
+                                onClick={() => setCurrentPage(pageIdx)}
+                                className={`h-2.5 rounded-full transition-all duration-300 cursor-pointer ${
+                                    activePage === pageIdx
+                                        ? "w-6 bg-brand-primary shadow-sm"
+                                        : "w-2.5 bg-slate-300 hover:bg-slate-400"
+                                }`}
+                                aria-label={`Go to page ${pageIdx + 1}`}
+                            />
+                        ))}
+                    </div>
+                )}
             </div>
         </section>
     );

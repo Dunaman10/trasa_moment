@@ -12,7 +12,7 @@ return new class extends Migration
             $table->id();
             $table->string('title');
             $table->string('category');
-            $table->string('image_path');
+            $table->string('image_path')->nullable();
             $table->integer('display_order')->default(0);
             $table->boolean('is_featured')->default(false);
             $table->timestamps();

@@ -13,6 +13,5 @@ Route::prefix('api')->group(function () {
     Route::post('/checkout', [ApiController::class, 'checkout']);
     Route::get('/tracking/{code}', [ApiController::class, 'getTrackingDetails']);
     Route::post('/tracking/{code}/reupload', [ApiController::class, 'reuploadPaymentProof']);
-    Route::post('/recommend', [ApiController::class, 'recommend']);
 });
 

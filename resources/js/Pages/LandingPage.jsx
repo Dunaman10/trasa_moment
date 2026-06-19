@@ -108,7 +108,7 @@ export default function LandingPage() {
                 {page === "landing" && (
                     <>
                         {/* Hero Section */}
-                        <Hero />
+                        <Hero data={landingData?.hero} />
 
                         {/* Fuzzy Recommendation Tool Section */}
                         <FuzzyWidget onSelectPackage={handleSelectPackage} />

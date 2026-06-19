@@ -4,10 +4,12 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Spatie\MediaLibrary\HasMedia;
+use Spatie\MediaLibrary\InteractsWithMedia;
 
-class Portfolio extends Model
+class Portfolio extends Model implements HasMedia
 {
-    use HasFactory;
+    use HasFactory, InteractsWithMedia;
 
     protected $fillable = [
         'title',
@@ -32,11 +34,18 @@ class Portfolio extends Model
         return $query->where('is_featured', true);
     }
 
+    protected $appends = ['image_path'];
+
+    public function getImagePathAttribute()
+    {
+        return $this->getFirstMediaUrl('portfolio_gallery') ?: ($this->attributes['image_path'] ?? null);
+    }
+
     /**
-     * Scope: urutkan berdasarkan display_order ascending.
+     * Scope: urutkan berdasarkan portfolio terbaru (newest first).
      */
     public function scopeOrdered($query)
     {
-        return $query->orderBy('display_order');
+        return $query->latest();
     }
 }

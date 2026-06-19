@@ -12,7 +12,10 @@ class HeroSetting extends Model
     protected $fillable = [
         'title',
         'subtitle',
-        'image_path',
+        'image_path_1',
+        'image_path_2',
+        'image_path_3',
+        'image_path_4',
         'cta_text',
         'is_active',
     ];

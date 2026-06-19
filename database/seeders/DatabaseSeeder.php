@@ -8,9 +8,6 @@ use App\Models\Portfolio;
 use App\Models\Testimonial;
 use App\Models\HeroSetting;
 use App\Models\LandingPageSetting;
-use App\Models\FuzzyVariable;
-use App\Models\FuzzyMembership;
-use App\Models\FuzzyRule;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\Hash;
 
@@ -23,10 +20,10 @@ class DatabaseSeeder extends Seeder
     {
         // 1. Seed Admin User
         User::updateOrCreate(
-            ['email' => 'admin@trasa.com'],
+            ['email' => 'admin@example.com'],
             [
                 'name' => 'Admin Trasa Moment',
-                'password' => Hash::make('password123'),
+                'password' => Hash::make('password'),
             ]
         );
 
@@ -35,7 +32,10 @@ class DatabaseSeeder extends Seeder
             ['title' => 'Abadikan Setiap Momen Berharga Bersama Kami'],
             [
                 'subtitle' => 'Penyedia jasa fotografi & videografi profesional dengan rekomendasi paket berbasis kecerdasan buatan.',
-                'image_path' => 'https://images.unsplash.com/photo-1519741497674-611481863552?auto=format&fit=crop&q=80&w=1200',
+                'image_path_1' => 'https://images.unsplash.com/photo-1519741497674-611481863552?auto=format&fit=crop&q=80&w=600',
+                'image_path_2' => 'https://images.unsplash.com/photo-1544717305-2782549b5136?auto=format&fit=crop&q=80&w=600',
+                'image_path_3' => 'https://images.unsplash.com/photo-1532712938310-34cb3982ef74?auto=format&fit=crop&q=80&w=600',
+                'image_path_4' => 'https://images.unsplash.com/photo-1492691527719-9d1e07e534b4?auto=format&fit=crop&q=80&w=600',
                 'cta_text' => 'Booking Sekarang',
                 'is_active' => true,
             ]
@@ -138,102 +138,6 @@ class DatabaseSeeder extends Seeder
             Testimonial::updateOrCreate(['client_name' => $testi['client_name']], $testi);
         }
 
-        // 7. Seed Fuzzy Variables & Memberships
-        $vBudget = FuzzyVariable::updateOrCreate(['name' => 'Budget'], ['description' => 'Budget pelanggan dalam Rupiah']);
-        $vScale = FuzzyVariable::updateOrCreate(['name' => 'Scale'], ['description' => 'Skala / Kerumitan acara (skala 1-10)']);
-        $vDuration = FuzzyVariable::updateOrCreate(['name' => 'Duration'], ['description' => 'Durasi kebutuhan sesi dalam jam']);
-
-        // Budget Memberships
-        $mLowBudget = FuzzyMembership::updateOrCreate(
-            ['variable_id' => $vBudget->id, 'label' => 'Terbatas'],
-            ['point_a' => 0.0, 'point_b' => 0.0, 'point_c' => 1500000.0, 'point_d' => 2500000.0]
-        );
-        $mMidBudget = FuzzyMembership::updateOrCreate(
-            ['variable_id' => $vBudget->id, 'label' => 'Menengah'],
-            ['point_a' => 1500000.0, 'point_b' => 2500000.0, 'point_c' => 4500000.0, 'point_d' => 6000000.0]
-        );
-        $mHighBudget = FuzzyMembership::updateOrCreate(
-            ['variable_id' => $vBudget->id, 'label' => 'Tinggi'],
-            ['point_a' => 4500000.0, 'point_b' => 6000000.0, 'point_c' => 15000000.0, 'point_d' => 15000000.0]
-        );
-
-        // Scale Memberships
-        $mIntimate = FuzzyMembership::updateOrCreate(
-            ['variable_id' => $vScale->id, 'label' => 'Intimate'],
-            ['point_a' => 1.0, 'point_b' => 1.0, 'point_c' => 3.0, 'point_d' => 5.0]
-        );
-        $mStandar = FuzzyMembership::updateOrCreate(
-            ['variable_id' => $vScale->id, 'label' => 'Standar'],
-            ['point_a' => 4.0, 'point_b' => 5.0, 'point_c' => 7.0, 'point_d' => 8.0]
-        );
-        $mGrand = FuzzyMembership::updateOrCreate(
-            ['variable_id' => $vScale->id, 'label' => 'Grand'],
-            ['point_a' => 7.0, 'point_b' => 8.0, 'point_c' => 10.0, 'point_d' => 10.0]
-        );
-
-        // Duration Memberships
-        $mShort = FuzzyMembership::updateOrCreate(
-            ['variable_id' => $vDuration->id, 'label' => 'Singkat'],
-            ['point_a' => 1.0, 'point_b' => 1.0, 'point_c' => 2.0, 'point_d' => 4.0]
-        );
-        $mReguler = FuzzyMembership::updateOrCreate(
-            ['variable_id' => $vDuration->id, 'label' => 'Reguler'],
-            ['point_a' => 3.0, 'point_b' => 4.0, 'point_c' => 6.0, 'point_d' => 8.0]
-        );
-        $mFullDay = FuzzyMembership::updateOrCreate(
-            ['variable_id' => $vDuration->id, 'label' => 'Seharian'],
-            ['point_a' => 6.0, 'point_b' => 8.0, 'point_c' => 12.0, 'point_d' => 12.0]
-        );
-
-        // 8. Seed Fuzzy Rules mapping all combinations to the packages
-        // Setup combinations: 3 budget * 3 scale * 3 duration = 27 rules
-        $rules = [
-            // Terbatas budget
-            ['b' => $mLowBudget, 's' => $mIntimate, 'd' => $mShort, 'p' => $bronze],
-            ['b' => $mLowBudget, 's' => $mIntimate, 'd' => $mReguler, 'p' => $bronze],
-            ['b' => $mLowBudget, 's' => $mIntimate, 'd' => $mFullDay, 'p' => $bronze],
-            ['b' => $mLowBudget, 's' => $mStandar, 'd' => $mShort, 'p' => $bronze],
-            ['b' => $mLowBudget, 's' => $mStandar, 'd' => $mReguler, 'p' => $silver],
-            ['b' => $mLowBudget, 's' => $mStandar, 'd' => $mFullDay, 'p' => $silver],
-            ['b' => $mLowBudget, 's' => $mGrand, 'd' => $mShort, 'p' => $silver],
-            ['b' => $mLowBudget, 's' => $mGrand, 'd' => $mReguler, 'p' => $silver],
-            ['b' => $mLowBudget, 's' => $mGrand, 'd' => $mFullDay, 'p' => $silver],
-
-            // Menengah budget
-            ['b' => $mMidBudget, 's' => $mIntimate, 'd' => $mShort, 'p' => $bronze],
-            ['b' => $mMidBudget, 's' => $mIntimate, 'd' => $mReguler, 'p' => $silver],
-            ['b' => $mMidBudget, 's' => $mIntimate, 'd' => $mFullDay, 'p' => $silver],
-            ['b' => $mMidBudget, 's' => $mStandar, 'd' => $mShort, 'p' => $silver],
-            ['b' => $mMidBudget, 's' => $mStandar, 'd' => $mReguler, 'p' => $silver],
-            ['b' => $mMidBudget, 's' => $mStandar, 'd' => $mFullDay, 'p' => $gold],
-            ['b' => $mMidBudget, 's' => $mGrand, 'd' => $mShort, 'p' => $silver],
-            ['b' => $mMidBudget, 's' => $mGrand, 'd' => $mReguler, 'p' => $gold],
-            ['b' => $mMidBudget, 's' => $mGrand, 'd' => $mFullDay, 'p' => $gold],
-
-            // Tinggi budget
-            ['b' => $mHighBudget, 's' => $mIntimate, 'd' => $mShort, 'p' => $silver],
-            ['b' => $mHighBudget, 's' => $mIntimate, 'd' => $mReguler, 'p' => $silver],
-            ['b' => $mHighBudget, 's' => $mIntimate, 'd' => $mFullDay, 'p' => $gold],
-            ['b' => $mHighBudget, 's' => $mStandar, 'd' => $mShort, 'p' => $silver],
-            ['b' => $mHighBudget, 's' => $mStandar, 'd' => $mReguler, 'p' => $gold],
-            ['b' => $mHighBudget, 's' => $mStandar, 'd' => $mFullDay, 'p' => $platinum],
-            ['b' => $mHighBudget, 's' => $mGrand, 'd' => $mShort, 'p' => $gold],
-            ['b' => $mHighBudget, 's' => $mGrand, 'd' => $mReguler, 'p' => $platinum],
-            ['b' => $mHighBudget, 's' => $mGrand, 'd' => $mFullDay, 'p' => $platinum],
-        ];
-
-        foreach ($rules as $r) {
-            FuzzyRule::updateOrCreate(
-                [
-                    'budget_membership_id' => $r['b']->id,
-                    'scale_membership_id' => $r['s']->id,
-                    'duration_membership_id' => $r['d']->id,
-                ],
-                [
-                    'recommended_package_id' => $r['p']->id,
-                ]
-            );
-        }
     }
 }
 

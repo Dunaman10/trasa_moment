@@ -9,7 +9,6 @@ use App\Models\Testimonial;
 use App\Models\HeroSetting;
 use App\Models\CalendarBlock;
 use App\Models\LandingPageSetting;
-use App\Services\FuzzyEngineService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\Storage;
@@ -119,6 +118,25 @@ class ApiController extends Controller
                 'errors' => ['booking_session' => 'Slot waktu yang Anda pilih sudah terisi atau di-hold. Silakan pilih slot lain.']
             ], 422);
         }
+
+        // Cek apakah slot waktu yang dipilih untuk hari ini sudah lewat jamnya
+        $now = \Carbon\Carbon::now('Asia/Jakarta');
+        $todayStr = $now->format('Y-m-d');
+        if ($request->event_date === $todayStr) {
+            $currentMinutes = $now->hour * 60 + $now->minute;
+            $startMinutes = [
+                'pagi' => 9 * 60,   // 09:00
+                'siang' => 13 * 60, // 13:00
+                'sore' => 17 * 60,  // 17:00
+            ];
+            
+            if (isset($startMinutes[$request->booking_session]) && $currentMinutes >= $startMinutes[$request->booking_session]) {
+                return response()->json([
+                    'errors' => ['booking_session' => 'Slot waktu yang Anda pilih sudah lewat untuk hari ini. Silakan pilih slot atau tanggal lain.']
+                ], 422);
+            }
+        }
+
 
         // Ambil info paket
         $package = Package::findOrFail($request->package_id);
@@ -246,19 +264,4 @@ class ApiController extends Controller
         ]);
     }
 
-    /**
-     * Run Fuzzy Mamdani Recommendation engine.
-     */
-    public function recommend(Request $request)
-    {
-        $budget = (float) $request->input('budget', 3000000);
-        $scale = (float) $request->input('scale', 5);
-        $duration = (float) $request->input('duration', 6);
-
-        $scores = FuzzyEngineService::recommend($budget, $scale, $duration);
-
-        return response()->json([
-            'scores' => $scores
-        ]);
-    }
 }

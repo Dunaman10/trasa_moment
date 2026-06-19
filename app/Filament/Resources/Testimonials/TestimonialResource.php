@@ -40,30 +40,56 @@ class TestimonialResource extends Resource
     {
         return 3;
     }
+    public static function getModelLabel(): string
+    {
+        return 'Testimoni';
+    }
+
+    public static function getPluralModelLabel(): string
+    {
+        return 'Testimoni';
+    }
+
     protected static ?string $recordTitleAttribute = 'client_name';
 
     public static function form(Schema $schema): Schema
     {
         return $schema
+            ->columns(1)
             ->components([
                 TextInput::make('client_name')
+                    ->label('Nama Klien')
                     ->required(),
-                TextInput::make('client_avatar_path')
+                \Filament\Forms\Components\SpatieMediaLibraryFileUpload::make('avatar')
+                    ->label('Foto Klien (Avatar)')
+                    ->collection('avatar')
+                    ->image()
+                    ->disk('public')
+                    ->visibility('public')
                     ->required(),
-                TextInput::make('event_category')
+                \Filament\Forms\Components\Select::make('event_category')
+                    ->label('Kategori Acara')
+                    ->options([
+                        'wedding' => 'Pernikahan (Wedding)',
+                        'graduation' => 'Wisuda (Graduation)',
+                        'personal' => 'Sesi Personal',
+                        'event' => 'Acara (Event)',
+                    ])
                     ->required(),
                 Textarea::make('review_text')
+                    ->label('Ulasan / Testimoni')
                     ->required()
                     ->columnSpanFull(),
                 TextInput::make('rating')
+                    ->label('Rating')
                     ->required()
                     ->numeric()
-                    ->default(5),
-                TextInput::make('display_order')
-                    ->required()
-                    ->numeric()
-                    ->default(0),
+                    ->default(5)
+                    ->minValue(1)
+                    ->maxValue(5),
                 Toggle::make('is_visible')
+                    ->label('Perlihatkan')
+                    ->default(true)
                     ->required(),
             ]);
     }
@@ -72,26 +98,39 @@ class TestimonialResource extends Resource
     {
         return $table
             ->recordTitleAttribute('client_name')
+            ->defaultSort('created_at', 'desc')
             ->columns([
+                \Filament\Tables\Columns\SpatieMediaLibraryImageColumn::make('avatar')
+                    ->label('Foto Klien')
+                    ->collection('avatar')
+                    ->circular(),
                 TextColumn::make('client_name')
-                    ->searchable(),
-                TextColumn::make('client_avatar_path')
+                    ->label('Nama Klien')
                     ->searchable(),
                 TextColumn::make('event_category')
+                    ->label('Kategori Acara')
+                    ->formatStateUsing(fn (string $state): string => match ($state) {
+                        'wedding' => 'Pernikahan (Wedding)',
+                        'graduation' => 'Wisuda (Graduation)',
+                        'personal' => 'Sesi Personal',
+                        'event' => 'Acara (Event)',
+                        default => $state,
+                    })
                     ->searchable(),
                 TextColumn::make('rating')
-                    ->numeric()
-                    ->sortable(),
-                TextColumn::make('display_order')
+                    ->label('Rating')
                     ->numeric()
                     ->sortable(),
                 IconColumn::make('is_visible')
+                    ->label('Perlihatkan')
                     ->boolean(),
                 TextColumn::make('created_at')
+                    ->label('Dibuat Pada')
                     ->dateTime()
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
                 TextColumn::make('updated_at')
+                    ->label('Diperbarui Pada')
                     ->dateTime()
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
@@ -100,8 +139,11 @@ class TestimonialResource extends Resource
                 //
             ])
             ->recordActions([
-                EditAction::make(),
-                DeleteAction::make(),
+                EditAction::make()
+                    ->modalSubmitActionLabel('Simpan')
+                    ->modalCancelActionLabel('Batal'),
+                DeleteAction::make()
+                    ->modalCancelActionLabel('Batal'),
             ])
             ->toolbarActions([
                 BulkActionGroup::make([

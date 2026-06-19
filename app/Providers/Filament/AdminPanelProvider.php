@@ -2,6 +2,7 @@
 
 namespace App\Providers\Filament;
 
+use AhmedAbdelrhman\FilamentMediaGallery\FilamentMediaGalleryPlugin;
 use Andreia\FilamentNordTheme\FilamentNordThemePlugin;
 use Filament\Http\Middleware\Authenticate;
 use Filament\Http\Middleware\AuthenticateSession;
@@ -45,7 +46,7 @@ class AdminPanelProvider extends PanelProvider
       ])
       ->plugin(FilamentNordThemePlugin::make())
       ->plugin(
-        \Joaopaulolndev\FilamentEditProfile\FilamentEditProfilePlugin::make()
+        FilamentEditProfilePlugin::make()
           ->shouldRegisterNavigation(false)
           ->shouldShowAvatarForm(
             directory: 'avatars',

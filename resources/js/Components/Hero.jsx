@@ -1,10 +1,24 @@
 import React from "react";
 import { Sparkles, Calendar, ArrowDown } from "lucide-react";
 
-export default function Hero() {
+export default function Hero({ data }) {
     const scrollToWidget = () => {
         document.getElementById("rekomendasi")?.scrollIntoView({ behavior: "smooth" });
     };
+
+    const title = data?.title || "Abadikan Setiap Momen Berharga Anda";
+    const subtitle = data?.subtitle || "Temukan paket fotografi & videografi profesional yang paling sesuai dengan budget dan skala acara Anda secara otomatis.";
+
+    const getImageUrl = (path, fallback) => {
+        if (!path) return fallback;
+        if (path.startsWith("http://") || path.startsWith("https://")) return path;
+        return `/storage/${path}`;
+    };
+
+    const image1 = getImageUrl(data?.image_path_1, "https://images.unsplash.com/photo-1519741497674-611481863552?auto=format&fit=crop&q=80&w=600");
+    const image2 = getImageUrl(data?.image_path_2, "https://images.unsplash.com/photo-1544717305-2782549b5136?auto=format&fit=crop&q=80&w=600");
+    const image3 = getImageUrl(data?.image_path_3, "https://images.unsplash.com/photo-1532712938310-34cb3982ef74?auto=format&fit=crop&q=80&w=600");
+    const image4 = getImageUrl(data?.image_path_4, "https://images.unsplash.com/photo-1492691527719-9d1e07e534b4?auto=format&fit=crop&q=80&w=600");
 
     return (
         <section id="hero" className="relative overflow-hidden bg-gradient-to-br from-slate-50 via-white to-brand-light/20 pt-6 pb-12 lg:pt-16 lg:pb-32">
@@ -24,16 +38,12 @@ export default function Hero() {
 
                         {/* Title */}
                         <h1 className="text-3xl sm:text-5xl lg:text-6xl font-extrabold tracking-tight text-brand-deep leading-[1.15]">
-                            Abadikan Setiap{" "}
-                            <span className="bg-gradient-to-r from-brand-primary to-brand-dark bg-clip-text text-transparent">
-                                Momen Berharga
-                            </span>{" "}
-                            Anda
+                            {title}
                         </h1>
 
                         {/* Subtitle */}
                         <p className="text-sm sm:text-lg lg:text-xl text-slate-600 max-w-2xl mx-auto lg:mx-0 leading-relaxed">
-                            Temukan paket fotografi & videografi profesional yang paling sesuai dengan budget dan skala acara Anda secara otomatis.
+                            {subtitle}
                         </p>
 
                         {/* CTA buttons */}
@@ -83,7 +93,7 @@ export default function Hero() {
                                     <div className="space-y-3">
                                         <div className="rounded-2xl overflow-hidden shadow-sm h-48 bg-slate-100">
                                             <img
-                                                src="https://images.unsplash.com/photo-1519741497674-611481863552?auto=format&fit=crop&q=80&w=600"
+                                                src={image1}
                                                 alt="Wedding Couple Shoot"
                                                 className="w-full h-full object-cover hover:scale-105 transition-transform duration-500"
                                                 loading="lazy"
@@ -91,7 +101,7 @@ export default function Hero() {
                                         </div>
                                         <div className="rounded-2xl overflow-hidden shadow-sm h-64 bg-slate-100">
                                             <img
-                                                src="https://images.unsplash.com/photo-1544717305-2782549b5136?auto=format&fit=crop&q=80&w=600"
+                                                src={image3}
                                                 alt="Graduation Celebration"
                                                 className="w-full h-full object-cover hover:scale-105 transition-transform duration-500"
                                                 loading="lazy"
@@ -101,7 +111,7 @@ export default function Hero() {
                                     <div className="space-y-3 pt-6">
                                         <div className="rounded-2xl overflow-hidden shadow-sm h-64 bg-slate-100">
                                             <img
-                                                src="https://images.unsplash.com/photo-1532712938310-34cb3982ef74?auto=format&fit=crop&q=80&w=600"
+                                                src={image2}
                                                 alt="Family Studio Portrait"
                                                 className="w-full h-full object-cover hover:scale-105 transition-transform duration-500"
                                                 loading="lazy"
@@ -109,7 +119,7 @@ export default function Hero() {
                                         </div>
                                         <div className="rounded-2xl overflow-hidden shadow-sm h-48 bg-slate-100">
                                             <img
-                                                src="https://images.unsplash.com/photo-1492691527719-9d1e07e534b4?auto=format&fit=crop&q=80&w=600"
+                                                src={image4}
                                                 alt="Pre-wedding Shoot"
                                                 className="w-full h-full object-cover hover:scale-105 transition-transform duration-500"
                                                 loading="lazy"

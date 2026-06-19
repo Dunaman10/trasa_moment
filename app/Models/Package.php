@@ -34,13 +34,6 @@ class Package extends Model
         return $this->hasMany(Booking::class);
     }
 
-    /**
-     * Aturan fuzzy yang merekomendasikan paket ini sebagai output.
-     */
-    public function fuzzyRules(): HasMany
-    {
-        return $this->hasMany(FuzzyRule::class, 'recommended_package_id');
-    }
 
     // ─── Scopes ───────────────────────────────────────────────────
 
@@ -55,12 +48,13 @@ class Package extends Model
     // ─── Accessors ────────────────────────────────────────────────
 
     /**
-     * Hitung estimasi nominal Down Payment (30% dari harga paket).
+     * Hitung nominal Down Payment flat Rp 500.000.
      */
     public function getDpAmountAttribute(): float
     {
-        return (float) $this->base_price * 0.30;
+        return 500000.00;
     }
+
 
     /**
      * Format harga ke format Rupiah (ex: "Rp 4.900.000").

@@ -13,7 +13,12 @@ class ManageTestimonials extends ManageRecords
     protected function getHeaderActions(): array
     {
         return [
-            CreateAction::make(),
+            CreateAction::make()
+                ->label('Tambah Testimoni')
+                ->modalHeading('Tambah Testimoni Baru')
+                ->modalSubmitActionLabel('Tambah')
+                ->modalCancelActionLabel('Batal')
+                ->createAnother(false),
         ];
     }
 }

@@ -23,86 +23,119 @@ use Filament\Tables\Table;
 
 class HeroSettingResource extends Resource
 {
-    protected static ?string $model = HeroSetting::class;
+  protected static ?string $model = HeroSetting::class;
 
-    protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedPhoto;
+  protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedPhoto;
 
 
-    public static function getNavigationLabel(): string
-    {
-        return 'Hero Banner';
-    }
+  public static function getNavigationLabel(): string
+  {
+    return 'Beranda';
+  }
 
-    public static function getNavigationGroup(): ?string
-    {
-        return 'Konten Landing Page';
-    }
+  public static function getModelLabel(): string
+  {
+    return 'Beranda';
+  }
 
-    public static function getNavigationSort(): ?int
-    {
-        return 1;
-    }
-    protected static ?string $recordTitleAttribute = 'title';
+  public static function getPluralModelLabel(): string
+  {
+    return 'Beranda';
+  }
 
-    public static function form(Schema $schema): Schema
-    {
-        return $schema
-            ->components([
-                TextInput::make('title')
-                    ->required(),
-                Textarea::make('subtitle')
-                    ->required()
-                    ->columnSpanFull(),
-                FileUpload::make('image_path')
-                    ->image()
-                    ->required(),
-                TextInput::make('cta_text')
-                    ->required()
-                    ->default('Booking Sekarang'),
-                Toggle::make('is_active')
-                    ->required(),
-            ]);
-    }
+  public static function getNavigationGroup(): ?string
+  {
+    return 'Konten Landing Page';
+  }
 
-    public static function table(Table $table): Table
-    {
-        return $table
-            ->recordTitleAttribute('title')
-            ->columns([
-                TextColumn::make('title')
-                    ->searchable(),
-                ImageColumn::make('image_path'),
-                TextColumn::make('cta_text')
-                    ->searchable(),
-                IconColumn::make('is_active')
-                    ->boolean(),
-                TextColumn::make('created_at')
-                    ->dateTime()
-                    ->sortable()
-                    ->toggleable(isToggledHiddenByDefault: true),
-                TextColumn::make('updated_at')
-                    ->dateTime()
-                    ->sortable()
-                    ->toggleable(isToggledHiddenByDefault: true),
-            ])
-            ->filters([
-                //
-            ])
-            ->recordActions([
-                EditAction::make(),
-                DeleteAction::make(),
-            ])
-            ->toolbarActions([
-                BulkActionGroup::make([
-                    DeleteBulkAction::make(),
-                ]),
-            ]);
-    }
+  public static function getNavigationSort(): ?int
+  {
+    return 1;
+  }
+  public static function canCreate(): bool
+  {
+    return false;
+  }
 
-    public static function getPages(): array
-    {
-        return [
-            'index' => ManageHeroSettings::route('/'),
-        ];
-    }
+  public static function canDelete(\Illuminate\Database\Eloquent\Model $record): bool
+  {
+    return false;
+  }
+
+  public static function form(Schema $schema): Schema
+  {
+    return $schema
+      ->components([
+        TextInput::make('title')
+          ->required()
+          ->columnSpanFull(),
+        Textarea::make('subtitle')
+          ->required()
+          ->columnSpanFull(),
+        FileUpload::make('image_path_1')
+          ->label('Foto Utama (Kiri Atas)')
+          ->image()
+          ->disk('public')
+          ->visibility('public')
+          ->required(),
+        FileUpload::make('image_path_2')
+          ->label('Foto Kanan (Kanan Atas)')
+          ->image()
+          ->disk('public')
+          ->visibility('public')
+          ->required(),
+        FileUpload::make('image_path_3')
+          ->label('Foto Studio (Kiri Bawah)')
+          ->image()
+          ->disk('public')
+          ->visibility('public')
+          ->required(),
+        FileUpload::make('image_path_4')
+          ->label('Foto Outdoor (Kanan Bawah)')
+          ->image()
+          ->disk('public')
+          ->visibility('public')
+          ->required(),
+      ]);
+  }
+
+  public static function table(Table $table): Table
+  {
+    return $table
+      ->columns([
+        TextColumn::make('title')
+          ->label('Judul')
+          ->searchable(),
+        // ImageColumn::make('image_path_1')
+        //   ->label('Foto 1'),
+        // ImageColumn::make('image_path_2')
+        //   ->label('Foto 2'),
+        // ImageColumn::make('image_path_3')
+        //   ->label('Foto 3'),
+        // ImageColumn::make('image_path_4')
+        //   ->label('Foto 4'),
+        TextColumn::make('updated_at')
+          ->label('Diperbarui Pada')
+          ->dateTime()
+          ->sortable(),
+      ])
+      ->filters([
+        //
+      ])
+      ->recordActions([
+        EditAction::make()
+          ->modalSubmitActionLabel('Simpan')
+          ->modalCancelActionLabel('Batal'),
+      ])
+      ->toolbarActions([
+        //
+      ]);
+  }
+
+  public static function getPages(): array
+  {
+    return [
+      'index' => ManageHeroSettings::route('/'),
+    ];
+  }
 }
