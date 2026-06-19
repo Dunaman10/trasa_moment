@@ -133,7 +133,14 @@ class BookingsTable
       ])
       ->actions([
         ViewAction::make(),
-        // EditAction::make(),
+        Action::make('open_maps')
+          ->label('Buka Peta')
+          ->color('info')
+          ->icon('heroicon-o-map')
+          ->url(fn(Booking $record): ?string => ($record->latitude && $record->longitude) 
+            ? "https://www.google.com/maps/search/?api=1&query={$record->latitude},{$record->longitude}" 
+            : null, true)
+          ->visible(fn(Booking $record): bool => !empty($record->latitude) && !empty($record->longitude)),
 
         Action::make('approve_dp')
           ->label('Setujui DP')

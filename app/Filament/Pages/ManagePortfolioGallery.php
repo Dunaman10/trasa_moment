@@ -18,12 +18,14 @@ use Filament\Forms\Contracts\HasForms;
 use Filament\Notifications\Notification;
 use Filament\Pages\Page;
 use Filament\Support\Icons\Heroicon;
+use Livewire\WithPagination;
 use UnitEnum;
 
 class ManagePortfolioGallery extends Page implements HasActions, HasForms
 {
     use InteractsWithActions;
     use InteractsWithForms;
+    use WithPagination;
 
     protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedCamera;
 
@@ -39,7 +41,7 @@ class ManagePortfolioGallery extends Page implements HasActions, HasForms
 
     public function getPortfolios()
     {
-        return Portfolio::with('media')->ordered()->get();
+        return Portfolio::with('media')->ordered()->paginate(6);
     }
 
     public function createAction(): CreateAction

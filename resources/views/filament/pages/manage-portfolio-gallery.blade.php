@@ -168,6 +168,194 @@
             align-items: center;
             gap: 8px;
         }
+        
+        
+        /* Custom Capsule Pagination CSS matching design mockup */
+        .custom-pagination-capsule {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            background: #ffffff;
+            border: 1px solid rgba(0, 0, 0, 0.05);
+            border-radius: 9999px;
+            padding: 12px 32px;
+            box-shadow: 0 4px 20px -2px rgba(0, 0, 0, 0.05), 0 2px 6px -1px rgba(0, 0, 0, 0.03);
+            width: 100%;
+            max-width: 100%;
+            margin-top: 24px;
+            box-sizing: border-box;
+            font-family: 'Outfit', 'Inter', system-ui, -apple-system, sans-serif;
+            gap: 16px;
+        }
+
+        .dark .custom-pagination-capsule {
+            background: #1f2937;
+            border-color: #374151;
+            box-shadow: 0 4px 20px -2px rgba(0, 0, 0, 0.3);
+        }
+
+        .pagination-left-group {
+            display: flex;
+            align-items: center;
+            gap: 18px;
+            flex-wrap: wrap;
+        }
+
+        /* Navigation buttons (Previous / Next) */
+        .pagination-nav-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 0.875rem;
+            font-weight: 550;
+            color: #4f46e5;
+            background: transparent;
+            border: none;
+            cursor: pointer;
+            padding: 6px 12px;
+            border-radius: 9999px;
+            transition: all 0.2s ease;
+            user-select: none;
+        }
+
+        .dark .pagination-nav-btn {
+            color: #818cf8;
+        }
+
+        .pagination-nav-btn:hover:not(.disabled) {
+            background: rgba(79, 70, 229, 0.08);
+            transform: translateY(-1px);
+        }
+
+        .dark .pagination-nav-btn:hover:not(.disabled) {
+            background: rgba(129, 140, 248, 0.15);
+        }
+
+        .pagination-nav-btn.disabled {
+            color: #9ca3af;
+            cursor: not-allowed;
+            opacity: 0.5;
+        }
+
+        .dark .pagination-nav-btn.disabled {
+            color: #6b7280;
+        }
+
+        .pagination-nav-btn svg {
+            width: 16px;
+            height: 16px;
+            stroke-width: 2.5;
+        }
+
+        /* Page Numbers container */
+        .pagination-numbers {
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+        /* Number buttons */
+        .pagination-number-btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 36px;
+            height: 36px;
+            border-radius: 9999px;
+            font-size: 0.875rem;
+            font-weight: 500;
+            color: #4b5563;
+            background: transparent;
+            border: none;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            user-select: none;
+            position: relative;
+        }
+
+        .dark .pagination-number-btn {
+            color: #d1d5db;
+        }
+
+        .pagination-number-btn:hover:not(.active) {
+            background: rgba(0, 0, 0, 0.04);
+            color: #111827;
+        }
+
+        .dark .pagination-number-btn:hover:not(.active) {
+            background: rgba(255, 255, 255, 0.08);
+            color: #ffffff;
+        }
+
+        /* Active styling - circle with double rings/halo matching screenshot */
+        .pagination-number-btn.active {
+            background: #4f46e5 !important; /* Elegant Indigo */
+            color: #ffffff !important;
+            font-weight: 600;
+            cursor: default;
+            box-shadow: 0 0 0 4px rgba(79, 70, 229, 0.25);
+        }
+
+        .dark .pagination-number-btn.active {
+            background: #6366f1 !important;
+            box-shadow: 0 0 0 4px rgba(99, 102, 241, 0.35);
+        }
+
+        .pagination-dots {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 32px;
+            height: 32px;
+            font-size: 0.875rem;
+            color: #9ca3af;
+            user-select: none;
+        }
+
+        .dark .pagination-dots {
+            color: #6b7280;
+        }
+
+        /* Results info showing on the right with vertical line separator on desktop */
+        .pagination-results-info {
+            font-size: 0.875rem;
+            color: #4b5563;
+            font-weight: 450;
+            padding-left: 24px;
+            border-left: 1px solid #e5e7eb;
+            white-space: nowrap;
+        }
+
+        .dark .pagination-results-info {
+            color: #9ca3af;
+            border-color: #374151;
+        }
+
+        /* Make it fully responsive */
+        @media (max-width: 768px) {
+            .custom-pagination-capsule {
+                flex-direction: column;
+                align-items: center;
+                border-radius: 20px;
+                padding: 16px;
+                gap: 12px;
+            }
+            .pagination-left-group {
+                justify-content: center;
+                width: 100%;
+            }
+            .pagination-results-info {
+                border-left: none;
+                padding-left: 0;
+                width: 100%;
+                text-align: center;
+                border-top: 1px solid #f3f4f6;
+                padding-top: 12px;
+            }
+            .dark .pagination-results-info {
+                border-color: #374151;
+            }
+        }
     </style>
 
     <div 
@@ -215,7 +403,7 @@
         <div class="portfolio-header">
             <div>
                 <p class="text-sm text-gray-500 dark:text-gray-400" style="margin: 0;">
-                    Total: <span class="font-semibold text-gray-800 dark:text-gray-200">{{ $this->getPortfolios()->count() }}</span> portfolio item(s)
+                    Total: <span class="font-semibold text-gray-800 dark:text-gray-200">{{ $this->getPortfolios()->total() }}</span> portfolio item(s)
                 </p>
             </div>
             <div>
@@ -315,6 +503,11 @@
                         </div>
                     </div>
                 @endforeach
+            </div>
+            
+            {{-- Pagination Links --}}
+            <div class="mt-8">
+                {{ $this->getPortfolios()->links('vendor.pagination.custom-capsule') }}
             </div>
         @endif
     </div>

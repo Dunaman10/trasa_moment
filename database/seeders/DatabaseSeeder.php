@@ -7,7 +7,6 @@ use App\Models\Package;
 use App\Models\Portfolio;
 use App\Models\Testimonial;
 use App\Models\HeroSetting;
-use App\Models\LandingPageSetting;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\Hash;
 
@@ -40,15 +39,6 @@ class DatabaseSeeder extends Seeder
                 'is_active' => true,
             ]
         );
-
-        // 3. Seed Landing Page Settings
-        LandingPageSetting::set('whatsapp_number', '628123456789');
-        LandingPageSetting::set('instagram_username', 'trasa.moment');
-        LandingPageSetting::set('office_address', 'Jl. Sudirman No. 123, Jakarta Selatan');
-        LandingPageSetting::set('qris_image_path', 'https://images.unsplash.com/photo-1595079676339-1534801ad6cf?auto=format&fit=crop&q=80&w=300');
-        LandingPageSetting::set('bca_account_number', '123-456-7890');
-        LandingPageSetting::set('mandiri_account_number', '987-654-3210');
-        LandingPageSetting::set('account_name', 'Trasa Moment Studio');
 
         // 4. Seed Packages
         $bronze = Package::updateOrCreate(

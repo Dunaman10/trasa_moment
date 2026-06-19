@@ -65,7 +65,17 @@ class BookingInfolist
                                         ->columnSpanFull(),
                                     TextEntry::make('event_location')
                                         ->label('Alamat Lengkap Lokasi')
-                                        ->columnSpanFull(),
+                                        ->columnSpanFull()
+                                        ->hintAction(
+                                            \Filament\Actions\Action::make('open_google_maps')
+                                                ->label('Buka di Google Maps')
+                                                ->icon('heroicon-m-map')
+                                                ->color('success')
+                                                ->url(fn (Booking $record): ?string => ($record->latitude && $record->longitude) 
+                                                    ? "https://www.google.com/maps/search/?api=1&query={$record->latitude},{$record->longitude}" 
+                                                    : null, true)
+                                                ->visible(fn (Booking $record): bool => !empty($record->latitude) && !empty($record->longitude))
+                                        ),
                                     TextEntry::make('latitude')
                                         ->label('Latitude')
                                         ->placeholder('-'),

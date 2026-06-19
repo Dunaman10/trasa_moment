@@ -8,7 +8,6 @@ use App\Models\Portfolio;
 use App\Models\Testimonial;
 use App\Models\HeroSetting;
 use App\Models\CalendarBlock;
-use App\Models\LandingPageSetting;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\Storage;
@@ -36,13 +35,13 @@ class ApiController extends Controller
                 ];
             }),
             'settings' => [
-                'whatsapp_number' => LandingPageSetting::get('whatsapp_number', '628123456789'),
-                'instagram_username' => LandingPageSetting::get('instagram_username', 'trasa.moment'),
-                'office_address' => LandingPageSetting::get('office_address'),
-                'account_name' => LandingPageSetting::get('account_name', 'Trasa Moment Studio'),
-                'bca_account_number' => LandingPageSetting::get('bca_account_number'),
-                'mandiri_account_number' => LandingPageSetting::get('mandiri_account_number'),
-                'qris_image_path' => LandingPageSetting::get('qris_image_path'),
+                'whatsapp_number' => config('trasa.settings.whatsapp_number'),
+                'instagram_username' => config('trasa.settings.instagram_username'),
+                'office_address' => config('trasa.settings.office_address'),
+                'account_name' => config('trasa.settings.account_name'),
+                'bca_account_number' => config('trasa.settings.bca_account_number'),
+                'mandiri_account_number' => config('trasa.settings.mandiri_account_number'),
+                'qris_image_path' => config('trasa.settings.qris_image_path'),
             ]
         ]);
     }

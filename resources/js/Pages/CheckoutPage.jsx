@@ -22,6 +22,108 @@ export default function CheckoutPage({ selectedPackage, bookingDate, bookingTime
     const [formErrors, setFormErrors] = useState({});
     const [isSubmitting, setIsSubmitting] = useState(false);
 
+    // Leaflet map states
+    const [latitude, setLatitude] = useState("-6.2088");
+    const [longitude, setLongitude] = useState("106.8456");
+    const [mapSearchQuery, setMapSearchQuery] = useState("");
+    const [mapSearchResults, setMapSearchResults] = useState([]);
+    const [isSearchingMap, setIsSearchingMap] = useState(false);
+    const mapRef = React.useRef(null);
+    const markerRef = React.useRef(null);
+
+    React.useEffect(() => {
+        if (typeof window.L === "undefined") return;
+
+        const defaultLat = -6.2088;
+        const defaultLng = 106.8456;
+
+        const map = window.L.map("booking-map").setView([defaultLat, defaultLng], 13);
+        mapRef.current = map;
+
+        window.L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
+            attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+        }).addTo(map);
+
+        const DefaultIcon = window.L.icon({
+            iconUrl: "https://unpkg.com/leaflet@1.9.4/dist/images/marker-icon.png",
+            shadowUrl: "https://unpkg.com/leaflet@1.9.4/dist/images/marker-shadow.png",
+            iconSize: [25, 41],
+            iconAnchor: [12, 41],
+            popupAnchor: [1, -34],
+            shadowSize: [41, 41]
+        });
+
+        const marker = window.L.marker([defaultLat, defaultLng], {
+            draggable: true,
+            icon: DefaultIcon
+        }).addTo(map);
+        markerRef.current = marker;
+
+        marker.on("dragend", function (e) {
+            const position = marker.getLatLng();
+            setLatitude(position.lat.toFixed(6));
+            setLongitude(position.lng.toFixed(6));
+            fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${position.lat}&lon=${position.lng}`)
+                .then(res => res.json())
+                .then(data => {
+                    if (data && data.display_name) {
+                        setLocation(data.display_name);
+                    }
+                })
+                .catch(err => console.error("Reverse geocoding failed", err));
+        });
+
+        map.on("click", function (e) {
+            const coord = e.latlng;
+            marker.setLatLng(coord);
+            setLatitude(coord.lat.toFixed(6));
+            setLongitude(coord.lng.toFixed(6));
+            fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${coord.lat}&lon=${coord.lng}`)
+                .then(res => res.json())
+                .then(data => {
+                    if (data && data.display_name) {
+                        setLocation(data.display_name);
+                    }
+                })
+                .catch(err => console.error("Reverse geocoding failed", err));
+        });
+
+        return () => {
+            map.remove();
+        };
+    }, []);
+
+    const handleMapSearch = () => {
+        if (!mapSearchQuery.trim()) return;
+        setIsSearchingMap(true);
+        fetch(`https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(mapSearchQuery)}`)
+            .then(res => res.json())
+            .then(data => {
+                setIsSearchingMap(false);
+                setMapSearchResults(data || []);
+            })
+            .catch(err => {
+                console.error("Map search failed", err);
+                setIsSearchingMap(false);
+            });
+    };
+
+    const handleSelectSearchResult = (result) => {
+        const lat = parseFloat(result.lat);
+        const lon = parseFloat(result.lon);
+        
+        setLatitude(lat.toFixed(6));
+        setLongitude(lon.toFixed(6));
+        setLocation(result.display_name);
+        setMapSearchResults([]);
+        setMapSearchQuery("");
+
+        if (mapRef.current && markerRef.current) {
+            mapRef.current.setView([lat, lon], 16);
+            markerRef.current.setLatLng([lat, lon]);
+        }
+    };
+
     // Format display date
     const getFormattedDisplayDate = (dateStr) => {
         if (!dateStr) return "";
@@ -143,8 +245,8 @@ export default function CheckoutPage({ selectedPackage, bookingDate, bookingTime
         formData.append("event_date", bookingDate);
         formData.append("booking_session", bookingTimeSlot);
         formData.append("event_location", location);
-        formData.append("latitude", "-6.2088");
-        formData.append("longitude", "106.8456");
+        formData.append("latitude", latitude);
+        formData.append("longitude", longitude);
         formData.append("special_notes", notes);
         formData.append("bank_destination", bank);
         formData.append("payment_proof_dp", receiptDp);
@@ -272,26 +374,56 @@ export default function CheckoutPage({ selectedPackage, bookingDate, bookingTime
                                 )}
                             </div>
 
-                            {/* Maps API Simulation */}
-                            <div className="space-y-2">
-                                <label className="text-xs font-bold text-slate-700 block uppercase">Pin Point Lokasi Maps (Mockup)</label>
-                                <div className="relative rounded-2xl overflow-hidden border border-slate-200 h-44 bg-slate-100 flex flex-col justify-between p-4">
-                                    <div className="absolute inset-0 bg-brand-light/10 pointer-events-none flex items-center justify-center">
-                                        <div className="w-64 h-64 border-4 border-dashed border-brand-accent/30 rounded-full animate-[spin_40s_linear_infinite]"></div>
+                            {/* Interactive Pinpoint Map */}
+                            <div className="space-y-3">
+                                <label className="text-xs font-bold text-slate-700 block uppercase">Pin Point Lokasi Acara *</label>
+                                
+                                {/* Map Search input */}
+                                <div className="flex gap-2">
+                                    <input
+                                        type="text"
+                                        value={mapSearchQuery}
+                                        onChange={(e) => setMapSearchQuery(e.target.value)}
+                                        placeholder="Cari lokasi/jalan/gedung di peta..."
+                                        className="flex-grow px-4 py-2.5 rounded-xl border border-slate-200 text-xs focus:outline-none focus:ring-2 focus:ring-brand-primary/20"
+                                        onKeyDown={(e) => e.key === "Enter" && (e.preventDefault(), handleMapSearch())}
+                                    />
+                                    <button
+                                        type="button"
+                                        onClick={handleMapSearch}
+                                        disabled={isSearchingMap}
+                                        className="bg-brand-primary hover:bg-brand-dark text-white font-bold px-4 py-2.5 rounded-xl text-xs transition-all cursor-pointer shrink-0"
+                                    >
+                                        {isSearchingMap ? "Mencari..." : "Cari"}
+                                    </button>
+                                </div>
+
+                                {/* Map Search Results List */}
+                                {mapSearchResults.length > 0 && (
+                                    <div className="bg-white border border-slate-200 rounded-xl max-h-48 overflow-y-auto shadow-lg z-25 relative text-xs divide-y divide-slate-100">
+                                        {mapSearchResults.map((result, idx) => (
+                                            <div
+                                                key={idx}
+                                                onClick={() => handleSelectSearchResult(result)}
+                                                className="p-3 hover:bg-slate-50 cursor-pointer transition-colors"
+                                            >
+                                                {result.display_name}
+                                            </div>
+                                        ))}
                                     </div>
-                                    
-                                    <div className="relative z-10 flex justify-between items-start">
-                                        <span className="bg-white/90 backdrop-blur px-3 py-1.5 rounded-lg border border-slate-200 text-3xs font-extrabold text-slate-700 flex items-center gap-1">
-                                            <MapPin className="w-3.5 h-3.5 text-brand-primary" />
-                                            Google Maps API
-                                        </span>
-                                        <span className="bg-emerald-500 text-white px-2 py-1 rounded text-3xs font-black uppercase">Active Pin</span>
-                                    </div>
-                                    
-                                    <div className="relative z-10 text-center space-y-1">
-                                        <p className="text-xs font-bold text-brand-deep">Koordinat Terpilih: -6.2088, 106.8456</p>
-                                        <p className="text-3xs text-slate-400">Peta disimulasikan sesuai dengan alamat di atas</p>
-                                    </div>
+                                )}
+
+                                {/* Interactive Leaflet Map Container */}
+                                <div className="relative rounded-2xl overflow-hidden border border-slate-200">
+                                    <div id="booking-map" style={{ height: "240px" }} className="w-full z-10"></div>
+                                </div>
+
+                                <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-1.5 px-1 bg-slate-50 p-3 rounded-xl border border-slate-100 text-3xs font-semibold text-slate-500">
+                                    <p className="flex items-center gap-1">
+                                        <MapPin className="w-3.5 h-3.5 text-brand-primary shrink-0" />
+                                        <span>Koordinat Terpilih: <strong>{latitude}, {longitude}</strong></span>
+                                    </p>
+                                    <span className="text-slate-400">Geser marker merah atau klik di peta untuk menentukan koordinat lokasi acara</span>
                                 </div>
                             </div>
 
