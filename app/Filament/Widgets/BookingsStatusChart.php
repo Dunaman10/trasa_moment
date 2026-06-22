@@ -4,12 +4,19 @@ namespace App\Filament\Widgets;
 
 use App\Models\Booking;
 use Filament\Widgets\ChartWidget;
+use Livewire\Attributes\On;
 
 class BookingsStatusChart extends ChartWidget
 {
     protected ?string $heading = 'Distribusi Status Pemesanan';
     
     protected static ?int $sort = 3;
+
+    #[On('echo:bookings,BookingSubmitted')]
+    public function refreshChart()
+    {
+        // Re-renders the widget
+    }
 
     protected function getData(): array
     {

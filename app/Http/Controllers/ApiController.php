@@ -176,6 +176,27 @@ class ApiController extends Controller
         $booking->payment_proof_admin_path = $adminPath;
         $booking->save();
 
+        try {
+            // Dispatch broadcast event
+            event(new \App\Events\BookingSubmitted($booking));
+
+            // Send Filament database notification to admin users
+            $admins = \App\Models\User::all();
+            \Filament\Notifications\Notification::make()
+                ->title('Booking Baru Diterima')
+                ->body("Booking dari {$booking->customer_name} ({$booking->booking_code}) menunggu verifikasi.")
+                ->icon('heroicon-o-clipboard-document-check')
+                ->iconColor('success')
+                ->actions([
+                    \Filament\Notifications\Actions\Action::make('view')
+                        ->label('Lihat Detail')
+                        ->url(fn () => \App\Filament\Resources\Bookings\BookingResource::getUrl('view', ['record' => $booking->id])),
+                ])
+                ->sendToDatabase($admins);
+        } catch (\Throwable $e) {
+            \Illuminate\Support\Facades\Log::error('Real-time notification/broadcast failed: ' . $e->getMessage());
+        }
+
         return response()->json([
             'success' => true,
             'booking_code' => $booking->booking_code
@@ -230,6 +251,27 @@ class ApiController extends Controller
         $booking->payment_proof_admin_path = $adminPath;
         $booking->status = Booking::STATUS_AWAITING_VERIFICATION;
         $booking->save();
+
+        try {
+            // Dispatch broadcast event
+            event(new \App\Events\BookingSubmitted($booking));
+
+            // Send Filament database notification to admin users
+            $admins = \App\Models\User::all();
+            \Filament\Notifications\Notification::make()
+                ->title('Bukti Pembayaran Diunggah Ulang')
+                ->body("Bukti pembayaran baru untuk booking {$booking->customer_name} ({$booking->booking_code}) telah diunggah ulang.")
+                ->icon('heroicon-o-arrow-path')
+                ->iconColor('info')
+                ->actions([
+                    \Filament\Notifications\Actions\Action::make('view')
+                        ->label('Lihat Detail')
+                        ->url(fn () => \App\Filament\Resources\Bookings\BookingResource::getUrl('view', ['record' => $booking->id])),
+                ])
+                ->sendToDatabase($admins);
+        } catch (\Throwable $e) {
+            \Illuminate\Support\Facades\Log::error('Real-time notification/broadcast failed: ' . $e->getMessage());
+        }
 
         return response()->json([
             'success' => true,

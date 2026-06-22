@@ -17,6 +17,7 @@
         "hugomyb/filament-media-action": "^5.0",
         "joaopaulolndev/filament-edit-profile": "^3.0",
         "laravel/framework": "^13.8",
+        "laravel/reverb": "^1.0",
         "laravel/tinker": "^3.0"
     },
     "require-dev": {

@@ -5,10 +5,17 @@ namespace App\Filament\Widgets;
 use App\Models\Booking;
 use Filament\Widgets\StatsOverviewWidget as BaseWidget;
 use Filament\Widgets\StatsOverviewWidget\Stat;
+use Livewire\Attributes\On;
 
 class StatsOverview extends BaseWidget
 {
     protected static ?int $sort = 1;
+
+    #[On('echo:bookings,BookingSubmitted')]
+    public function refreshStats()
+    {
+        // Re-renders the widget
+    }
 
     protected function getStats(): array
     {
