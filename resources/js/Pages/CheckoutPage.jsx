@@ -443,7 +443,7 @@ export default function CheckoutPage({ selectedPackage, bookingDate, bookingTime
                             <div className="space-y-4 border-t border-slate-100 pt-6">
                                 <div>
                                     <h3 className="font-bold text-brand-deep text-sm tracking-wide uppercase">Pembayaran 1: Down Payment (DP) Jasa Fotografi</h3>
-                                    <p className="text-2xs text-slate-400">Transfer DP sebesar Rp 500.000 ke salah satu rekening Bank Trasa Moment berikut</p>
+                                    <p className="text-2xs text-slate-400">Transfer DP sebesar Rp 500.000 ke salah satu rekening Bank Lumina Studio berikut</p>
                                 </div>
 
                                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
@@ -456,7 +456,7 @@ export default function CheckoutPage({ selectedPackage, bookingDate, bookingTime
                                         <div>
                                             <span className="text-xs font-black text-brand-deep block">BANK BCA</span>
                                             <span className="text-xs text-slate-500 font-bold">8690-112-990</span>
-                                            <span className="text-3xs text-slate-400 block mt-1">a/n Trasa Moment</span>
+                                            <span className="text-3xs text-slate-400 block mt-1">a/n Lumina Studio</span>
                                         </div>
                                         <div className={`w-5 h-5 rounded-full border-2 flex items-center justify-center ${
                                             bank === "bca" ? "border-brand-primary bg-brand-primary text-white" : "border-slate-200"
@@ -473,7 +473,7 @@ export default function CheckoutPage({ selectedPackage, bookingDate, bookingTime
                                         <div>
                                             <span className="text-xs font-black text-brand-deep block">BANK MANDIRI</span>
                                             <span className="text-xs text-slate-500 font-bold">131-00-5523-909</span>
-                                            <span className="text-3xs text-slate-400 block mt-1">a/n Trasa Moment</span>
+                                            <span className="text-3xs text-slate-400 block mt-1">a/n Lumina Studio</span>
                                         </div>
                                         <div className={`w-5 h-5 rounded-full border-2 flex items-center justify-center ${
                                             bank === "mandiri" ? "border-brand-primary bg-brand-primary text-white" : "border-slate-200"

@@ -3,8 +3,8 @@ import { Search, FileText, CheckCircle2, Clock, Calendar, Check, Download, Exter
 
 // Mock booking database
 const MOCK_BOOKING_DB = {
-    "TRASA-XYZ123": {
-        code: "TRASA-XYZ123",
+    "LUMINA-XYZ123": {
+        code: "LUMINA-XYZ123",
         name: "Syarif Hidayatullah",
         package: "Gold (Standard Wedding / Big Event)",
         price: "Rp 4.900.000",
@@ -15,18 +15,18 @@ const MOCK_BOOKING_DB = {
         bank: "BCA",
         updatedAt: "2026-06-18 09:00"
     },
-    "TRASA-COMPLETED": {
-        code: "TRASA-COMPLETED",
+    "LUMINA-COMPLETED": {
+        code: "LUMINA-COMPLETED",
         name: "Jessica Alvia",
         package: "Bronze (Personal / Grad)",
         price: "Rp 1.250.000",
         date: "2026-06-10",
         slot: "pagi",
-        location: "Studio Trasa, Jakarta",
+        location: "Studio Lumina, Jakarta",
         status: "completed",
         bank: "Mandiri",
         updatedAt: "2026-06-12 15:30",
-        downloadUrl: "https://drive.google.com/drive/folders/mock-trasa-moment-photos"
+        downloadUrl: "https://drive.google.com/drive/folders/mock-lumina-studio-photos"
     }
 };
 
@@ -177,7 +177,7 @@ export default function TrackingPage({ initialBookingCode, justCheckedOut, onBac
                 if (MOCK_BOOKING_DB[cleanCode]) {
                     setActiveBooking(MOCK_BOOKING_DB[cleanCode]);
                     setSearchError("");
-                } else if (cleanCode.startsWith("TRASA-") && cleanCode.length >= 10) {
+                } else if (cleanCode.startsWith("LUMINA-") && cleanCode.length >= 10) {
                     setActiveBooking({
                         code: cleanCode,
                         name: "Pelanggan Terhormat (Guest)",
@@ -275,7 +275,7 @@ export default function TrackingPage({ initialBookingCode, justCheckedOut, onBac
         {
             id: "awaiting_verification",
             label: "Verifikasi Bukti Pembayaran",
-            desc: "Menunggu verifikasi bukti transfer DP jasa & bukti biaya admin QRIS oleh Tim Keuangan Trasa Moment."
+            desc: "Menunggu verifikasi bukti transfer DP jasa & bukti biaya admin QRIS oleh Tim Keuangan Lumina Studio."
         },
         {
             id: "scheduled",
@@ -344,9 +344,9 @@ export default function TrackingPage({ initialBookingCode, justCheckedOut, onBac
 
                 {/* Section Title */}
                 <div className="text-center mb-6 lg:mb-10 space-y-2">
-                    <h1 className="text-xl sm:text-3xl font-extrabold text-brand-deep">Lacak Pemesanan Trasa Moment</h1>
+                    <h1 className="text-xl sm:text-3xl font-extrabold text-brand-deep">Lacak Pemesanan Lumina Studio</h1>
                     <p className="text-xs text-slate-500 max-w-xl mx-auto">
-                        Gunakan Kode Booking unik (contoh: <strong>TRASA-XYZ123</strong>) untuk memeriksa status pesanan.
+                        Gunakan Kode Booking unik (contoh: <strong>LUMINA-XYZ123</strong>) untuk memeriksa status pesanan.
                     </p>
                 </div>
 
@@ -359,7 +359,7 @@ export default function TrackingPage({ initialBookingCode, justCheckedOut, onBac
                                 type="text"
                                 value={searchCode}
                                 onChange={(e) => setSearchCode(e.target.value)}
-                                placeholder="Masukkan Kode Booking Anda (contoh: TRASA-XYZ123)"
+                                placeholder="Masukkan Kode Booking Anda (contoh: LUMINA-XYZ123)"
                                 className="w-full pl-12 pr-4 py-3.5 rounded-2xl border border-slate-200 text-sm font-bold uppercase tracking-wide focus:outline-none focus:ring-2 focus:ring-brand-primary/20 transition-all placeholder:normal-case placeholder:font-normal"
                                 onKeyDown={(e) => e.key === "Enter" && handleSearch()}
                             />
@@ -707,7 +707,7 @@ export default function TrackingPage({ initialBookingCode, justCheckedOut, onBac
                         <div className="space-y-1 max-w-md mx-auto">
                             <h3 className="font-bold text-brand-deep text-base">Lihat Status Booking Anda</h3>
                             <p className="text-xs text-slate-400 leading-relaxed">
-                                Masukkan kode booking dari form pemesanan Anda atau gunakan contoh kode demo: <strong className="text-brand-primary font-bold">TRASA-XYZ123</strong> (dalam proses) atau <strong className="text-brand-primary font-bold">TRASA-COMPLETED</strong> (selesai) untuk mencoba fitur.
+                                Masukkan kode booking dari form pemesanan Anda atau gunakan contoh kode demo: <strong className="text-brand-primary font-bold">LUMINA-XYZ123</strong> (dalam proses) atau <strong className="text-brand-primary font-bold">LUMINA-COMPLETED</strong> (selesai) untuk mencoba fitur.
                             </p>
                         </div>
                     </div>

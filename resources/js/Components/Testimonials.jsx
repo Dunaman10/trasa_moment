@@ -12,14 +12,14 @@ const TESTIMONIALS = [
     {
         name: "Fadel Rahman",
         role: "Wisudawan Universitas (Bronze Package)",
-        quote: "Checkout sebagai guest sangat mempermudah pemesanan slot pas foto wisuda tanpa harus pusing bikin akun. Pelacakan pesanan menggunakan kode TRASA juga transparan sekali, kita tahu progres editing sampai foto siap unduh.",
+        quote: "Checkout sebagai guest sangat mempermudah pemesanan slot pas foto wisuda tanpa harus pusing bikin akun. Pelacakan pesanan menggunakan kode LUMINA juga transparan sekali, kita tahu progres editing sampai foto siap unduh.",
         stars: 5,
         avatar: "https://images.unsplash.com/photo-1507679799987-c73779587ccf?auto=format&fit=crop&q=80&w=150"
     },
     {
         name: "Citra Kirana",
         role: "Klien Pre-wedding (Silver Package)",
-        quote: "Terima kasih Trasa Moment! Layanan dari sebelum hari H sampai penyerahan file sangat memuaskan. Album photobook cetak yang dikirim eksklusif sekali. Worth it dengan investasi yang kami keluarkan.",
+        quote: "Terima kasih Lumina Studio! Layanan dari sebelum hari H sampai penyerahan file sangat memuaskan. Album photobook cetak yang dikirim eksklusif sekali. Worth it dengan investasi yang kami keluarkan.",
         stars: 5,
         avatar: "https://images.unsplash.com/photo-1508214751196-bcfd4ca60f91?auto=format&fit=crop&q=80&w=150"
     }
@@ -59,7 +59,7 @@ export default function Testimonials({ testimonials }) {
                         Testimoni Klien
                     </span>
                     <h2 className="text-3xl sm:text-4xl font-extrabold text-brand-deep">
-                        Kata Mereka Tentang Trasa Moment
+                        Kata Mereka Tentang Lumina Studio
                     </h2>
                     <p className="text-slate-500 text-base sm:text-lg">
                         Ulasan tulus dari para pelanggan yang telah mempercayakan dokumentasi momen berharga mereka kepada kami.

@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { Menu, X, ArrowRight } from "lucide-react";
-import logoUrl from "../../assets/img/logo-trasa-moment.png";
+import logoUrl from "../../assets/img/logo-lumina-studio.png";
 
 export default function Navbar({ onNavigate, currentPage }) {
   const [isOpen, setIsOpen] = useState(false);
@@ -62,11 +62,11 @@ export default function Navbar({ onNavigate, currentPage }) {
             >
               <img
                 src={logoUrl}
-                alt="Trasa Moment Logo"
+                alt="Lumina Studio Logo"
                 className="w-10 h-10 rounded-full object-cover border border-slate-200/60 shadow-sm"
               />
               <span className="text-xl font-bold tracking-tight text-brand-deep">
-                Trasa<span className="text-brand-primary">Moment</span>
+                Lumina<span className="text-brand-primary">Studio</span>
               </span>
             </div>
 
