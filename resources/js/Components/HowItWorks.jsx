@@ -30,7 +30,7 @@ const STEPS = [
         num: "05",
         icon: Download,
         title: "Lacak & Unduh Hasil",
-        desc: "Gunakan kode booking unik (misal: TRASA-XYZ) di portal pelacakan untuk memantau status edit dan mengunduh foto."
+        desc: "Gunakan kode booking unik (misal: LUMINA-XYZ) di portal pelacakan untuk memantau status edit dan mengunduh foto."
     }
 ];
 
@@ -47,7 +47,7 @@ export default function HowItWorks() {
                         Alur Kerja Kami
                     </span>
                     <h2 className="text-3xl sm:text-4xl font-extrabold text-brand-deep">
-                        Bagaimana Cara Memesan di Trasa Moment?
+                        Bagaimana Cara Memesan di Lumina Studio?
                     </h2>
                     <p className="text-slate-500 text-base sm:text-lg">
                         Proses pemesanan dirancang sesederhana mungkin untuk mengurangi friction pengguna melalui skema guest checkout.

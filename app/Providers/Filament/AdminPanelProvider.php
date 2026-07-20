@@ -31,11 +31,11 @@ class AdminPanelProvider extends PanelProvider
       ->id('admin')
       ->path('admin')
       ->login()
-      ->brandName('Trasa Moment')
+      ->brandName('Lumina Studio')
       ->brandLogo(fn() => new \Illuminate\Support\HtmlString('
           <div style="display: flex !important; align-items: center !important; gap: 8px !important; height: 32px !important; overflow: hidden !important;">
-              <img src="' . asset('favicon.png') . '" alt="Trasa Moment Logo" style="height: 32px !important; width: 32px !important; max-height: 32px !important; max-width: 32px !important; min-width: 32px !important; border-radius: 50% !important; object-fit: cover !important; display: inline-block !important;" />
-              <span style="font-size: 1.15rem !important; font-weight: 700 !important; letter-spacing: -0.025em !important; line-height: 1 !important; white-space: nowrap !important;">Trasa Moment</span>
+              <img src="' . asset('favicon.png') . '" alt="Lumina Studio Logo" style="height: 32px !important; width: 32px !important; max-height: 32px !important; max-width: 32px !important; min-width: 32px !important; border-radius: 50% !important; object-fit: cover !important; display: inline-block !important;" />
+              <span style="font-size: 1.15rem !important; font-weight: 700 !important; letter-spacing: -0.025em !important; line-height: 1 !important; white-space: nowrap !important;">Lumina Studio</span>
           </div>
       '))
       ->brandLogoHeight('2.5rem')

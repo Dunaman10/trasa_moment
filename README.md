@@ -1,4 +1,4 @@
-# Trasa Moment Booking System
+# Lumina Studio Booking System
 
 Sistem Informasi Rekomendasi dan Pemesanan Layanan Fotografi & Videografi Berbasis **Fuzzy Logic (Metode Mamdani)**.
 
@@ -6,7 +6,7 @@ Sistem Informasi Rekomendasi dan Pemesanan Layanan Fotografi & Videografi Berbas
 
 ## 📌 Ringkasan Proyek
 
-**Trasa Moment Booking System** adalah platform web dengan arsitektur headless yang dirancang untuk mendigitalkan manajemen operasional agensi fotografi Trasa Moment. Platform ini memadukan algoritma Fuzzy Logic Mamdani untuk memberikan rekomendasi paket layanan yang paling sesuai dengan kebutuhan pengguna secara real-time.
+**Lumina Studio Booking System** adalah platform web dengan arsitektur headless yang dirancang untuk mendigitalkan manajemen operasional agensi fotografi Lumina Studio. Platform ini memadukan algoritma Fuzzy Logic Mamdani untuk memberikan rekomendasi paket layanan yang paling sesuai dengan kebutuhan pengguna secara real-time.
 
 Pembaruan utama pada versi ini adalah penerapan alur pemesanan tanpa kewajiban login (**Guest Checkout**) guna meminimalisir hambatan pengguna (friction). Sistem ini juga mengedepankan transparansi melalui **Fitur Kalender Publik**, di mana klien dapat melihat ketersediaan jadwal secara langsung. Pembayaran DP dilakukan melalui skema unggah bukti transfer manual yang dilengkapi dengan sistem pembatalan otomatis (**Auto-Expire**) di sisi backend untuk mencegah pemblokiran jadwal fiktif.
 
@@ -30,7 +30,7 @@ Pembaruan utama pada versi ini adalah penerapan alur pemesanan tanpa kewajiban l
 
 ## 🌟 Fitur Utama
 
-1.  **Guest Checkout & Tracking Code:** Pelanggan dapat melakukan booking langsung tanpa harus membuat akun. Setiap pesanan akan menghasilkan Kode Booking Unik (misal: `TRASA-XYZ123`).
+1.  **Guest Checkout & Tracking Code:** Pelanggan dapat melakukan booking langsung tanpa harus membuat akun. Setiap pesanan akan menghasilkan Kode Booking Unik (misal: `LUMINA-XYZ123`).
 2.  **Sistem Rekomendasi Fuzzy Logic (Mamdani):**
     *   **Variabel Input (Fuzzifikasi):** Budget Pelanggan (Rupiah), Skala Acara (Kuantitas/Kerumitan), dan Durasi Kebutuhan (Jam).
     *   **Mekanisme:** Evaluasi aturan menggunakan implikasi MIN (kondisi AND) dan defuzzifikasi menggunakan metode **Centroid (Center of Area)** untuk menghasilkan Skor Kelayakan Relevansi paket.
@@ -44,10 +44,10 @@ Pembaruan utama pada versi ini adalah penerapan alur pemesanan tanpa kewajiban l
 
 ## 📂 Struktur Direktori Utama
 
-*   [`app/Models/`](file:///c:/Users/Syarif%20Hidayatullah/Herd/trasa_moment/app/Models) - Model database (`Portfolio`, `Testimonial`, `Booking`, `Package`, `FuzzyVariable`, dll).
-*   [`database/migrations/`](file:///c:/Users/Syarif%20Hidayatullah/Herd/trasa_moment/database/migrations) - Skema database sistem booking dan parameter fuzzy logic.
-*   [`routes/web.php`](file:///c:/Users/Syarif%20Hidayatullah/Herd/trasa_moment/routes/web.php) - Rute web dan endpoint API publik (`/api/landing-data`, `/api/checkout`, `/api/recommend`, dll).
-*   [`resources/js/`](file:///c:/Users/Syarif%20Hidayatullah/Herd/trasa_moment/resources/js) - Komponen frontend SPA berbasis React.js.
+*   [`app/Models/`](file:///c:/Users/Syarif%20Hidayatullah/Herd/lumina_studio/app/Models) - Model database (`Portfolio`, `Testimonial`, `Booking`, `Package`, `FuzzyVariable`, dll).
+*   [`database/migrations/`](file:///c:/Users/Syarif%20Hidayatullah/Herd/lumina_studio/database/migrations) - Skema database sistem booking dan parameter fuzzy logic.
+*   [`routes/web.php`](file:///c:/Users/Syarif%20Hidayatullah/Herd/lumina_studio/routes/web.php) - Rute web dan endpoint API publik (`/api/landing-data`, `/api/checkout`, `/api/recommend`, dll).
+*   [`resources/js/`](file:///c:/Users/Syarif%20Hidayatullah/Herd/lumina_studio/resources/js) - Komponen frontend SPA berbasis React.js.
 
 ---
 
@@ -127,5 +127,5 @@ php artisan schedule:work
 
 ## 📄 Lisensi
 
-Aplikasi ini dikembangkan sebagai perangkat lunak internal/komersial untuk agensi fotografi **Trasa Moment**. Hak cipta dilindungi undang-undang.
+Aplikasi ini dikembangkan sebagai perangkat lunak internal/komersial untuk agensi fotografi **Lumina Studio**. Hak cipta dilindungi undang-undang.
 

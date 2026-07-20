@@ -87,7 +87,7 @@ export default function Portfolio({ items }) {
                         Hasil Karya Kami
                     </span>
                     <h2 className="text-3xl sm:text-4xl font-extrabold text-brand-deep">
-                        Portfolio Pilihan Trasa Moment
+                        Portfolio Pilihan Lumina Studio
                     </h2>
                     <p className="text-slate-500 text-base sm:text-lg">
                         Lihat kumpulan cuplikan foto terbaik kami dari berbagai kategori acara.

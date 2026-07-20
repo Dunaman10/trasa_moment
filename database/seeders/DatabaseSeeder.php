@@ -21,7 +21,7 @@ class DatabaseSeeder extends Seeder
         User::updateOrCreate(
             ['email' => 'admin@example.com'],
             [
-                'name' => 'Admin Trasa Moment',
+                'name' => 'Admin Lumina Studio',
                 'password' => Hash::make('password'),
             ]
         );
@@ -109,7 +109,7 @@ class DatabaseSeeder extends Seeder
                 'client_name' => 'Fadel Rahman',
                 'client_avatar_path' => 'https://images.unsplash.com/photo-1507679799987-c73779587ccf?auto=format&fit=crop&q=80&w=150',
                 'event_category' => 'graduation',
-                'review_text' => 'Checkout sebagai guest sangat mempermudah pemesanan slot pas foto wisuda tanpa harus pusing bikin akun. Pelacakan pesanan menggunakan kode TRASA juga transparan sekali.',
+                'review_text' => 'Checkout sebagai guest sangat mempermudah pemesanan slot pas foto wisuda tanpa harus pusing bikin akun. Pelacakan pesanan menggunakan kode LUMINA juga transparan sekali.',
                 'rating' => 5,
                 'display_order' => 2,
                 'is_visible' => true,
@@ -118,7 +118,7 @@ class DatabaseSeeder extends Seeder
                 'client_name' => 'Citra Kirana',
                 'client_avatar_path' => 'https://images.unsplash.com/photo-1508214751196-bcfd4ca60f91?auto=format&fit=crop&q=80&w=150',
                 'event_category' => 'prewedding',
-                'review_text' => 'Terima kasih Trasa Moment! Layanan dari sebelum hari H sampai penyerahan file sangat memuaskan. Album photobook cetak yang dikirim eksklusif sekali.',
+                'review_text' => 'Terima kasih Lumina Studio! Layanan dari sebelum hari H sampai penyerahan file sangat memuaskan. Album photobook cetak yang dikirim eksklusif sekali.',
                 'rating' => 5,
                 'display_order' => 3,
                 'is_visible' => true,

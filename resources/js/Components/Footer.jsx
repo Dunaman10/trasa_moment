@@ -1,11 +1,11 @@
 import React from "react";
 import { Mail, Phone, MapPin } from "lucide-react";
-import logoUrl from "../../assets/img/logo-trasa-moment.png";
+import logoUrl from "../../assets/img/logo-lumina-studio.png";
 
 export default function Footer() {
   const handleSubscribe = (e) => {
     e.preventDefault();
-    alert("Terima kasih telah berlangganan newsletter Trasa Moment!");
+    alert("Terima kasih telah berlangganan newsletter Lumina Studio!");
   };
 
   return (
@@ -17,11 +17,11 @@ export default function Footer() {
             <div className="flex items-center space-x-2.5 text-white">
               <img
                 src={logoUrl}
-                alt="Trasa Moment Logo"
+                alt="Lumina Studio Logo"
                 className="w-10 h-10 rounded-full object-cover border border-slate-700 shadow-sm"
               />
               <span className="text-xl font-bold tracking-tight">
-                Trasa<span className="text-brand-light">Moment</span>
+                Lumina<span className="text-brand-light">Studio</span>
               </span>
             </div>
             <p className="text-xs leading-relaxed text-slate-400 max-w-sm">
@@ -174,12 +174,12 @@ export default function Footer() {
         {/* Bottom Footer Info */}
         <div className="flex flex-col sm:flex-row justify-between items-center pt-8 text-2xs text-slate-500 font-medium">
           <p>
-            © {new Date().getFullYear()} Trasa Moment Booking System. Hak Cipta
+            © {new Date().getFullYear()} Lumina Studio Booking System. Hak Cipta
             Dilindungi.
           </p>
           <p className="mt-2 sm:mt-0">
             Built for{" "}
-            <span className="text-slate-400">Trasa Moment Agency</span>
+            <span className="text-slate-400">Lumina Studio Agency</span>
           </p>
         </div>
       </div>

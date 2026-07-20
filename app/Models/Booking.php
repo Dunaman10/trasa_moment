@@ -159,13 +159,13 @@ class Booking extends Model
     // ─── Helpers ──────────────────────────────────────────────────
 
     /**
-     * Generate Kode Booking unik berformat TRASA-XXXXXX
+     * Generate Kode Booking unik berformat LUMINA-XXXXXX
      * (6 karakter alfanumerik acak, huruf kapital).
      */
     public static function generateBookingCode(): string
     {
         do {
-            $code = 'TRASA-' . strtoupper(substr(str_shuffle('ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789'), 0, 6));
+            $code = 'LUMINA-' . strtoupper(substr(str_shuffle('ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789'), 0, 6));
         } while (self::where('booking_code', $code)->exists());
 
         return $code;
