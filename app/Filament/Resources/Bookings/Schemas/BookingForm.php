@@ -46,9 +46,16 @@ class BookingForm
                     ->columnSpanFull(),
                 TextInput::make('bank_destination')
                     ->required(),
-                TextInput::make('status')
+                Select::make('status')
+                    ->label('Status Pemesanan')
+                    ->options(\App\Models\Booking::statusLabels())
                     ->required()
-                    ->default('awaiting_payment'),
+                    ->default(\App\Models\Booking::STATUS_AWAITING_PAYMENT),
+                Textarea::make('rejection_reason')
+                    ->label('Alasan Penolakan DP')
+                    ->placeholder('Alasan kenapa pembayaran DP ditolak')
+                    ->rows(2)
+                    ->columnSpanFull(),
                 TextInput::make('dp_amount')
                     ->required()
                     ->numeric(),

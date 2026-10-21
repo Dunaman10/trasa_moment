@@ -110,12 +110,19 @@ class BookingInfolist
                                         ->color(fn(string $state): string => match ($state) {
                                             Booking::STATUS_AWAITING_PAYMENT => 'warning',
                                             Booking::STATUS_AWAITING_VERIFICATION => 'info',
+                                            Booking::STATUS_REJECTED => 'danger',
                                             Booking::STATUS_SCHEDULED => 'success',
                                             Booking::STATUS_COMPLETED => 'gray',
                                             Booking::STATUS_CANCELLED => 'danger',
                                             default => 'gray',
                                         })
                                         ->formatStateUsing(fn(string $state): string => Booking::statusLabels()[$state] ?? $state),
+                                    TextEntry::make('rejection_reason')
+                                        ->label('Alasan Penolakan DP')
+                                        ->color('danger')
+                                        ->weight('bold')
+                                        ->visible(fn(Booking $record): bool => !empty($record->rejection_reason))
+                                        ->columnSpanFull(),
                                     TextEntry::make('bank_destination')
                                         ->label('Bank Tujuan')
                                         ->formatStateUsing(fn(string $state) => strtoupper($state)),

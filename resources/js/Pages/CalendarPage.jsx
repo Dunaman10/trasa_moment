@@ -76,7 +76,7 @@ export default function CalendarPage({ selectedPackage, packages, onBack, onProc
                         if (!compiled[b.date]) {
                             compiled[b.date] = { pagi: "available", siang: "available", sore: "available" };
                         }
-                        const statusMapping = b.status === "awaiting_payment" || b.status === "awaiting_verification" ? "hold" : "booked";
+                        const statusMapping = b.status === "awaiting_payment" || b.status === "awaiting_verification" || b.status === "rejected" ? "hold" : "booked";
                         compiled[b.date][b.session] = statusMapping;
                     });
                 }

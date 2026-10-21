@@ -214,7 +214,7 @@ class ApiController extends Controller
             return response()->json(['message' => 'Kode booking tidak ditemukan.'], 404);
         }
 
-        if ($booking->status !== Booking::STATUS_AWAITING_PAYMENT) {
+        if (!in_array($booking->status, [Booking::STATUS_REJECTED, Booking::STATUS_AWAITING_PAYMENT])) {
             return response()->json(['message' => 'Status pemesanan tidak mengizinkan unggah ulang bukti pembayaran.'], 400);
         }
 
@@ -250,6 +250,7 @@ class ApiController extends Controller
         $booking->payment_proof_dp_path = $dpPath;
         $booking->payment_proof_admin_path = $adminPath;
         $booking->status = Booking::STATUS_AWAITING_VERIFICATION;
+        $booking->rejection_reason = null; // Reset alasan penolakan karena sudah diupload bukti baru
         $booking->save();
 
         try {
@@ -300,6 +301,11 @@ class ApiController extends Controller
             'event_date' => $booking->event_date->format('Y-m-d'),
             'booking_session' => $booking->booking_session,
             'status' => $booking->status,
+            'status_label' => $booking->status_label,
+            'rejection_reason' => $booking->rejection_reason,
+            'dp_amount' => (float) $booking->dp_amount,
+            'admin_fee' => (float) $booking->admin_fee,
+            'bank_destination' => $booking->bank_destination,
             'final_drive_link' => $booking->final_drive_link,
             'created_at' => $booking->created_at->toISOString(),
         ]);

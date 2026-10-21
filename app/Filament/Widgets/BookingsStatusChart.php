@@ -27,6 +27,7 @@ class BookingsStatusChart extends ChartWidget
         $colors = [
             Booking::STATUS_AWAITING_PAYMENT => '#eab308',
             Booking::STATUS_AWAITING_VERIFICATION => '#06b6d4',
+            Booking::STATUS_REJECTED => '#f43f5e',
             Booking::STATUS_SCHEDULED => '#10b981',
             Booking::STATUS_SHOOTING => '#3b82f6',
             Booking::STATUS_EDITING => '#8b5cf6',

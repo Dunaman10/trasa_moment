@@ -10,6 +10,7 @@ use Filament\Actions\Action;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Columns\ImageColumn;
 use Filament\Forms\Components\TextInput;
+use Filament\Forms\Components\Textarea;
 use Filament\Tables\Table;
 use App\Models\Booking;
 use Hugomyb\FilamentMediaAction\Actions\MediaAction;
@@ -52,6 +53,7 @@ class BookingsTable
           ->color(fn(string $state): string => match ($state) {
             Booking::STATUS_AWAITING_PAYMENT => 'warning',
             Booking::STATUS_AWAITING_VERIFICATION => 'info',
+            Booking::STATUS_REJECTED => 'danger',
             Booking::STATUS_SCHEDULED => 'success',
             Booking::STATUS_COMPLETED => 'gray',
             Booking::STATUS_CANCELLED => 'danger',
@@ -59,6 +61,13 @@ class BookingsTable
           })
           ->formatStateUsing(fn(string $state): string => Booking::statusLabels()[$state] ?? $state)
           ->searchable(),
+        TextColumn::make('rejection_reason')
+          ->label('Alasan Penolakan')
+          ->placeholder('-')
+          ->limit(35)
+          ->tooltip(fn(Booking $record): ?string => $record->rejection_reason)
+          ->color('danger')
+          ->toggleable(isToggledHiddenByDefault: false),
         // TextColumn::make('total_price')
         //   ->label('Total Harga')
         //   ->money('IDR', locale: 'id-ID')
@@ -146,15 +155,50 @@ class BookingsTable
           ->label('Setujui DP')
           ->color('success')
           ->icon('heroicon-o-check-circle')
-          ->visible(fn(Booking $record): bool => in_array($record->status, [Booking::STATUS_AWAITING_PAYMENT, Booking::STATUS_AWAITING_VERIFICATION]))
-          ->action(fn(Booking $record) => $record->update(['status' => Booking::STATUS_SCHEDULED])),
+          ->visible(fn(Booking $record): bool => $record->status === Booking::STATUS_AWAITING_VERIFICATION)
+          ->requiresConfirmation()
+          ->modalHeading('Setujui Pembayaran DP')
+          ->modalDescription('Apakah Anda yakin ingin menyetujui DP ini? Jadwal akan resmi dikunci dan status menjadi "Dijadwalkan".')
+          ->modalSubmitActionLabel('Ya, Setujui')
+          ->action(function (Booking $record) {
+            $record->update([
+              'status' => Booking::STATUS_SCHEDULED,
+              'rejection_reason' => null,
+            ]);
+            \Filament\Notifications\Notification::make()
+              ->title('DP Berhasil Disetujui')
+              ->body("Pemesanan {$record->booking_code} kini berstatus Dijadwalkan.")
+              ->success()
+              ->send();
+          }),
 
         Action::make('reject_dp')
           ->label('Tolak DP')
           ->color('danger')
           ->icon('heroicon-o-x-circle')
           ->visible(fn(Booking $record): bool => $record->status === Booking::STATUS_AWAITING_VERIFICATION)
-          ->action(fn(Booking $record) => $record->update(['status' => Booking::STATUS_AWAITING_PAYMENT])),
+          ->form([
+            Textarea::make('rejection_reason')
+              ->label('Alasan Penolakan DP')
+              ->placeholder('Contoh: Nominal transfer DP kurang (seharusnya Rp 500.000), bukti transfer buram/tidak terbaca, atau bukti scan QRIS admin belum disertakan.')
+              ->helperText('Alasan ini akan langsung tampil di halaman tracking pelanggan sebagai panduan perbaikan bukti pembayaran.')
+              ->required()
+              ->rows(3),
+          ])
+          ->modalHeading('Tolak Pembayaran DP')
+          ->modalDescription('Status pemesanan akan diubah menjadi "DP Ditolak" dan pelanggan akan melihat alasan penolakan ini di halaman lacak pesanan.')
+          ->modalSubmitActionLabel('Tolak DP & Kirim Alasan')
+          ->action(function (Booking $record, array $data) {
+            $record->update([
+              'status' => Booking::STATUS_REJECTED,
+              'rejection_reason' => $data['rejection_reason'],
+            ]);
+            \Filament\Notifications\Notification::make()
+              ->title('DP Ditolak')
+              ->body("Pemesanan {$record->booking_code} berstatus DP Ditolak dengan alasan yang tersimpan.")
+              ->warning()
+              ->send();
+          }),
 
         Action::make('complete_booking')
           ->label('Selesai & Kirim Link Drive')

@@ -24,6 +24,7 @@ class Booking extends Model
         'special_notes',
         'bank_destination',
         'status',
+        'rejection_reason',
         'dp_amount',
         'admin_fee',
         'total_price',
@@ -42,16 +43,18 @@ class Booking extends Model
     /**
      * Status yang tersedia dalam pipeline pemesanan (sesuai PRD).
      *
-     * awaiting_payment  → Customer sudah submit form, menunggu bukti transfer
-     * awaiting_verification → Bukti transfer sudah diunggah, menunggu disetujui Admin
-     * scheduled         → DP diverifikasi, jadwal resmi dikunci
-     * shooting          → Sesi foto sedang berlangsung
-     * editing           → File mentah sedang diproses/edit
-     * completed         → File final siap diunduh
-     * cancelled         → Dibatalkan (manual atau auto-expire)
+     * awaiting_payment       → Customer sudah submit form, menunggu bukti transfer
+     * awaiting_verification  → Bukti transfer sudah diunggah, menunggu disetujui Admin
+     * rejected               → Bukti transfer ditolak oleh Admin dengan alasan perbaikan
+     * scheduled              → DP diverifikasi, jadwal resmi dikunci
+     * shooting               → Sesi foto sedang berlangsung
+     * editing                → File mentah sedang diproses/edit
+     * completed              → File final siap diunduh
+     * cancelled              → Dibatalkan (manual atau auto-expire)
      */
     const STATUS_AWAITING_PAYMENT       = 'awaiting_payment';
     const STATUS_AWAITING_VERIFICATION  = 'awaiting_verification';
+    const STATUS_REJECTED               = 'rejected';
     const STATUS_SCHEDULED              = 'scheduled';
     const STATUS_SHOOTING               = 'shooting';
     const STATUS_EDITING                = 'editing';
@@ -66,6 +69,7 @@ class Booking extends Model
         return [
             self::STATUS_AWAITING_PAYMENT,
             self::STATUS_AWAITING_VERIFICATION,
+            self::STATUS_REJECTED,
             self::STATUS_SCHEDULED,
             self::STATUS_SHOOTING,
             self::STATUS_EDITING,
@@ -82,6 +86,7 @@ class Booking extends Model
         return [
             self::STATUS_AWAITING_PAYMENT      => 'Menunggu Pembayaran',
             self::STATUS_AWAITING_VERIFICATION => 'Menunggu Verifikasi',
+            self::STATUS_REJECTED              => 'DP Ditolak',
             self::STATUS_SCHEDULED             => 'Dijadwalkan',
             self::STATUS_SHOOTING              => 'Sesi Berlangsung',
             self::STATUS_EDITING               => 'Proses Editing',
@@ -147,12 +152,13 @@ class Booking extends Model
         ]);
     }
 
-    /** Cek apakah booking dalam status "Hold" (sudah mengisi form tapi belum diverifikasi). */
+    /** Cek apakah booking dalam status "Hold" (sudah mengisi form tapi belum diverifikasi atau sedang perbaikan DP). */
     public function getIsHoldAttribute(): bool
     {
         return in_array($this->status, [
             self::STATUS_AWAITING_PAYMENT,
             self::STATUS_AWAITING_VERIFICATION,
+            self::STATUS_REJECTED,
         ]);
     }
 

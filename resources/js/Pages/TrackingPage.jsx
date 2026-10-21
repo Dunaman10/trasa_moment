@@ -163,6 +163,11 @@ export default function TrackingPage({ initialBookingCode, justCheckedOut, onBac
                         date: data.event_date,
                         slot: data.booking_session,
                         status: data.status,
+                        statusLabel: data.status_label,
+                        rejectionReason: data.rejection_reason,
+                        dpAmount: data.dp_amount || 500000,
+                        adminFee: data.admin_fee || 5000,
+                        bank: data.bank_destination || "BCA",
                         downloadUrl: data.final_drive_link,
                         updatedAt: new Date(data.created_at).toLocaleString("id-ID"),
                     });
@@ -263,6 +268,15 @@ export default function TrackingPage({ initialBookingCode, justCheckedOut, onBac
         return `${daysOfWeek[dateObj.getDay()]}, ${d} ${months[dateObj.getMonth()]} ${y}`;
     };
 
+    const formatCurrency = (amount) => {
+        return new Intl.NumberFormat("id-ID", {
+            style: "currency",
+            currency: "IDR",
+            minimumFractionDigits: 0,
+            maximumFractionDigits: 0,
+        }).format(amount);
+    };
+
     const getFormattedTimeSlot = (slotId) => {
         if (slotId === "pagi") return "Sesi Pagi (09:00 - 12:00)";
         if (slotId === "siang") return "Sesi Siang (13:00 - 16:00)";
@@ -301,6 +315,8 @@ export default function TrackingPage({ initialBookingCode, justCheckedOut, onBac
 
     const getStatusIndex = (status) => {
         const mapping = {
+            "awaiting_payment": 0,
+            "rejected": 0,
             "awaiting_verification": 0,
             "scheduled": 1,
             "shooting": 2,
@@ -433,9 +449,35 @@ export default function TrackingPage({ initialBookingCode, justCheckedOut, onBac
                         {/* Summary Info Header */}
                         <div className="bg-white p-6 sm:p-8 rounded-3xl shadow-xl border border-slate-100/50 grid grid-cols-1 md:grid-cols-2 gap-6 items-center">
                             <div className="space-y-2">
-                                <span className="bg-brand-primary/10 border border-brand-primary/20 text-brand-primary text-3xs font-extrabold px-3 py-1 rounded-full uppercase tracking-wider">
-                                    Detail Booking Aktif
-                                </span>
+                                <div className="flex items-center gap-2 flex-wrap">
+                                    <span className="bg-brand-primary/10 border border-brand-primary/20 text-brand-primary text-3xs font-extrabold px-3 py-1 rounded-full uppercase tracking-wider">
+                                        Detail Booking Aktif
+                                    </span>
+                                    {activeBooking.status === "rejected" && (
+                                        <span className="bg-red-100 border border-red-200 text-red-700 text-3xs font-black px-3 py-1 rounded-full uppercase tracking-wider flex items-center gap-1">
+                                            <AlertCircle className="w-3.5 h-3.5 text-red-600" />
+                                            DP Ditolak
+                                        </span>
+                                    )}
+                                    {activeBooking.status === "awaiting_verification" && (
+                                        <span className="bg-sky-100 border border-sky-200 text-sky-700 text-3xs font-black px-3 py-1 rounded-full uppercase tracking-wider flex items-center gap-1">
+                                            <Clock className="w-3.5 h-3.5 text-sky-600" />
+                                            Menunggu Verifikasi
+                                        </span>
+                                    )}
+                                    {activeBooking.status === "awaiting_payment" && (
+                                        <span className="bg-amber-100 border border-amber-200 text-amber-700 text-3xs font-black px-3 py-1 rounded-full uppercase tracking-wider flex items-center gap-1">
+                                            <Clock className="w-3.5 h-3.5 text-amber-600" />
+                                            Menunggu Pembayaran
+                                        </span>
+                                    )}
+                                    {activeBooking.status === "scheduled" && (
+                                        <span className="bg-emerald-100 border border-emerald-200 text-emerald-700 text-3xs font-black px-3 py-1 rounded-full uppercase tracking-wider flex items-center gap-1">
+                                            <Check className="w-3.5 h-3.5 text-emerald-600" />
+                                            Dijadwalkan
+                                        </span>
+                                    )}
+                                </div>
                                 {/* Booking code + inline copy button */}
                                 <div className="flex items-center gap-2 flex-wrap">
                                     <h2 className="text-xl font-extrabold text-brand-deep">{activeBooking.code}</h2>
@@ -450,7 +492,7 @@ export default function TrackingPage({ initialBookingCode, justCheckedOut, onBac
                                         }`}
                                     >
                                         {copied ? (
-                                            <><Check className="w-3 h-3" /> Tersalin</>
+                                             <><Check className="w-3 h-3" /> Tersalin</>
                                         ) : (
                                             <><CopyIcon className="w-3 h-3" /> Salin</>
                                         )}
@@ -489,13 +531,17 @@ export default function TrackingPage({ initialBookingCode, justCheckedOut, onBac
 
                             <div className="relative pl-6 sm:pl-8 border-l-2 border-slate-100 ml-4 space-y-8">
                                 {timelineSteps.map((step, idx) => {
-                                    const isCompleted = idx < currentStatusIdx;
+                                    const isRejectedStep = step.id === "awaiting_verification" && activeBooking.status === "rejected";
+                                    const isCompleted = !isRejectedStep && idx < currentStatusIdx;
                                     const isActive = idx === currentStatusIdx;
                                     
                                     let iconColor = "bg-slate-200 text-slate-400 border-slate-200";
                                     let activeRing = "";
 
-                                    if (isCompleted) {
+                                    if (isRejectedStep) {
+                                        iconColor = "bg-red-500 text-white border-red-500";
+                                        activeRing = "ring-4 ring-red-500/20 animate-pulse";
+                                    } else if (isCompleted) {
                                         iconColor = "bg-emerald-500 text-white border-emerald-500";
                                     } else if (isActive) {
                                         iconColor = "bg-brand-primary text-white border-brand-primary";
@@ -506,7 +552,9 @@ export default function TrackingPage({ initialBookingCode, justCheckedOut, onBac
                                         <div key={step.id} className="relative">
                                             {/* Left icon marker */}
                                             <div className={`absolute -left-[39px] sm:-left-[47px] top-0.5 w-6 h-6 sm:w-8 sm:h-8 rounded-full border-4 border-white flex items-center justify-center text-xs font-bold transition-all duration-300 ${iconColor} ${activeRing}`}>
-                                                {isCompleted ? (
+                                                {isRejectedStep ? (
+                                                    <X className="w-3.5 h-3.5" />
+                                                ) : isCompleted ? (
                                                     <Check className="w-3.5 h-3.5" />
                                                 ) : (
                                                     <span>{idx + 1}</span>
@@ -516,11 +564,16 @@ export default function TrackingPage({ initialBookingCode, justCheckedOut, onBac
                                             {/* Details */}
                                             <div className="space-y-1">
                                                 <h4 className={`text-sm font-extrabold transition-colors ${
-                                                    isCompleted ? "text-emerald-600" : isActive ? "text-brand-primary" : "text-slate-400"
+                                                    isRejectedStep ? "text-red-600" : isCompleted ? "text-emerald-600" : isActive ? "text-brand-primary" : "text-slate-400"
                                                 }`}>
-                                                    {step.label}
+                                                    {isRejectedStep ? "Verifikasi Tertahan (DP Ditolak)" : step.label}
                                                 </h4>
-                                                <p className="text-xs text-slate-500 leading-relaxed max-w-2xl">{step.desc}</p>
+                                                <p className="text-xs text-slate-500 leading-relaxed max-w-2xl">
+                                                    {isRejectedStep
+                                                        ? "Bukti pembayaran ditolak oleh admin. Silakan periksa alasan penolakan dan unggah bukti baru pada formulir perbaikan di bawah."
+                                                        : step.desc
+                                                    }
+                                                </p>
                                             </div>
                                         </div>
                                     );
@@ -528,22 +581,66 @@ export default function TrackingPage({ initialBookingCode, justCheckedOut, onBac
                             </div>
                         </div>
 
-                        {/* Re-upload Payment Proof Section for Awaiting Payment (Rejected DP) */}
-                        {activeBooking.status === "awaiting_payment" && (
-                            <div className="bg-red-50 border-2 border-red-100 rounded-3xl p-6 sm:p-8 shadow-lg space-y-6 animate-[slide-up_0.6s_ease-out]">
-                                <div className="flex gap-4">
-                                    <AlertCircle className="w-8 h-8 text-red-600 shrink-0 mt-1" />
+                        {/* Re-upload Payment Proof Section for Rejected DP or Awaiting Payment */}
+                        {(activeBooking.status === "rejected" || activeBooking.status === "awaiting_payment") && (
+                            <div className="bg-gradient-to-b from-red-50/90 to-white border-2 border-red-200 rounded-3xl p-6 sm:p-8 shadow-xl space-y-6 animate-[slide-up_0.6s_ease-out]">
+                                <div className="flex gap-4 items-start">
+                                    <div className="p-3 bg-red-600 text-white rounded-2xl shrink-0 shadow-md">
+                                        <AlertCircle className="w-7 h-7" />
+                                    </div>
                                     <div className="space-y-1">
-                                        <h3 className="text-base sm:text-lg font-black text-red-800">Bukti Pembayaran Ditolak atau Belum Lengkap</h3>
+                                        <h3 className="text-base sm:text-lg font-black text-red-900">
+                                            {activeBooking.status === "rejected"
+                                                ? "Bukti Pembayaran DP Ditolak"
+                                                : "Bukti Pembayaran Ditolak atau Belum Lengkap"}
+                                        </h3>
                                         <p className="text-xs text-slate-600 leading-relaxed">
-                                            Maaf, bukti transfer DP atau biaya admin yang Anda unggah sebelumnya tidak dapat diverifikasi oleh admin. Silakan unggah kembali bukti transfer DP (Rp 500.000) dan bukti biaya admin QRIS (Rp 5.000) yang valid untuk memproses ulang pemesanan Anda.
+                                            Maaf, bukti transfer DP atau biaya admin yang Anda unggah sebelumnya belum dapat diverifikasi oleh admin. Silakan periksa alasan penolakan di bawah ini dan unggah kembali bukti pembayaran yang valid.
                                         </p>
                                     </div>
                                 </div>
 
+                                {/* Kotak Alasan Penolakan dari Admin */}
+                                {activeBooking.rejectionReason && (
+                                    <div className="bg-white border-2 border-red-300 rounded-2xl p-5 shadow-sm space-y-2">
+                                        <div className="flex items-center gap-2">
+                                            <span className="text-3xs uppercase tracking-wider font-extrabold text-red-700 bg-red-100 px-2.5 py-1 rounded-full border border-red-200">
+                                                Alasan Penolakan oleh Admin
+                                            </span>
+                                            <span className="text-3xs text-slate-400">Harap perhatikan catatan ini sebelum upload ulang</span>
+                                        </div>
+                                        <div className="p-4 bg-red-50/70 rounded-xl border border-red-100 text-xs sm:text-sm text-red-900 font-bold leading-relaxed">
+                                            "{activeBooking.rejectionReason}"
+                                        </div>
+                                    </div>
+                                )}
+
+                                {/* Panduan Cara Mengatasi Penolakan Transaksi */}
+                                <div className="bg-amber-50/80 border border-amber-200/90 rounded-2xl p-5 space-y-3">
+                                    <h4 className="text-xs font-black uppercase tracking-wider text-amber-900 flex items-center gap-2">
+                                        <HelpCircle className="w-4 h-4 text-amber-700" />
+                                        Petunjuk & Langkah Perbaikan Pembayaran:
+                                    </h4>
+                                    <ul className="text-xs text-amber-950/90 space-y-2 list-disc list-inside">
+                                        <li>
+                                            <strong>Pastikan Nominal DP Tepat:</strong> Transfer DP wajib sesuai ketentuan sebesar <strong>{formatCurrency(activeBooking.dpAmount || 500000)}</strong> ke rekening <strong>{activeBooking.bank || "BCA"}</strong> Trasa Moment.
+                                        </li>
+                                        <li>
+                                            <strong>Pastikan Biaya Admin QRIS:</strong> Unggah bukti scan QRIS biaya admin sebesar <strong>{formatCurrency(activeBooking.adminFee || 5000)}</strong>.
+                                        </li>
+                                        <li>
+                                            <strong>Kualitas Tangkapan Layar / Foto:</strong> Pastikan gambar bukti transfer jernih, tidak terpotong, serta menampilkan tanggal, jam, dan nomor referensi transaksi yang jelas.
+                                        </li>
+                                        <li>
+                                            Setelah kedua berkas siap, pilih file pada kolom di bawah lalu klik tombol <strong>"Kirim Ulang Bukti Pembayaran"</strong>.
+                                        </li>
+                                    </ul>
+                                </div>
+
                                 {reuploadSuccess && (
-                                    <div className="bg-emerald-50 border border-emerald-200 text-emerald-800 p-4 rounded-2xl text-xs font-bold">
-                                        Bukti pembayaran berhasil diunggah ulang! Status akan berubah menjadi "Menunggu Verifikasi" dan tim kami akan segera memprosesnya.
+                                    <div className="bg-emerald-50 border-2 border-emerald-200 text-emerald-800 p-4 rounded-2xl text-xs font-bold flex items-center gap-2">
+                                        <Check className="w-5 h-5 text-emerald-600 shrink-0" />
+                                        <span>Bukti pembayaran berhasil diunggah ulang! Status pesanan kini menjadi "Menunggu Verifikasi" dan tim kami akan segera memprosesnya.</span>
                                     </div>
                                 )}
 
@@ -559,7 +656,9 @@ export default function TrackingPage({ initialBookingCode, justCheckedOut, onBac
                                     <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
                                         {/* Uploader DP */}
                                         <div className="space-y-2">
-                                            <label className="text-xs font-bold text-slate-700 block uppercase">Upload Bukti Transfer DP Jasa (Rp 500.000) *</label>
+                                            <label className="text-xs font-bold text-slate-700 block uppercase">
+                                                Upload Bukti Transfer DP Jasa ({formatCurrency(activeBooking.dpAmount || 500000)}) *
+                                            </label>
                                             {!receiptDp ? (
                                                 <div className="border-2 border-dashed border-slate-200 hover:border-brand-primary bg-white rounded-2xl p-5 text-center transition-all">
                                                     <input
@@ -604,7 +703,9 @@ export default function TrackingPage({ initialBookingCode, justCheckedOut, onBac
 
                                         {/* Uploader Admin */}
                                         <div className="space-y-2">
-                                            <label className="text-xs font-bold text-slate-700 block uppercase">Upload Bukti Scan QRIS Admin (Rp 5.000) *</label>
+                                            <label className="text-xs font-bold text-slate-700 block uppercase">
+                                                Upload Bukti Scan QRIS Admin ({formatCurrency(activeBooking.adminFee || 5000)}) *
+                                            </label>
                                             {!receiptAdmin ? (
                                                 <div className="border-2 border-dashed border-slate-200 hover:border-brand-primary bg-white rounded-2xl p-5 text-center transition-all">
                                                     <input
