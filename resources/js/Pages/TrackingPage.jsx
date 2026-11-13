@@ -45,7 +45,6 @@ export default function TrackingPage({ initialBookingCode, justCheckedOut, onBac
     const [isReuploading, setIsReuploading] = useState(false);
     const [reuploadErrors, setReuploadErrors] = useState({});
     const [reuploadSuccess, setReuploadSuccess] = useState(false);
-    const [hasDownloaded, setHasDownloaded] = useState(false);
 
     const handleFileChangeDp = (e) => {
         const file = e.target.files[0];
@@ -141,22 +140,6 @@ export default function TrackingPage({ initialBookingCode, justCheckedOut, onBac
             handleSearch(initialBookingCode);
         }
     }, [initialBookingCode]);
-
-    useEffect(() => {
-        if (activeBooking?.code) {
-            const downloaded = localStorage.getItem(`trasa_downloaded_${activeBooking.code}`) === "true";
-            setHasDownloaded(downloaded);
-        } else {
-            setHasDownloaded(false);
-        }
-    }, [activeBooking?.code]);
-
-    const handleDownloadFinal = () => {
-        if (activeBooking?.code) {
-            localStorage.setItem(`trasa_downloaded_${activeBooking.code}`, "true");
-            setHasDownloaded(true);
-        }
-    };
 
     const handleSearch = (codeToSearch) => {
         const cleanCode = (codeToSearch || searchCode).trim().toUpperCase();
@@ -551,7 +534,7 @@ export default function TrackingPage({ initialBookingCode, justCheckedOut, onBac
                                     const isRejectedStep = step.id === "awaiting_verification" && activeBooking.status === "rejected";
                                     const isCompleted = !isRejectedStep && (
                                         idx < currentStatusIdx ||
-                                        (step.id === "completed" && activeBooking.status === "completed" && hasDownloaded)
+                                        (step.id === "completed" && activeBooking.status === "completed")
                                     );
                                     const isActive = !isCompleted && idx === currentStatusIdx;
                                     
@@ -809,7 +792,6 @@ export default function TrackingPage({ initialBookingCode, justCheckedOut, onBac
                                         href={activeBooking.downloadUrl || "#"}
                                         target="_blank"
                                         rel="noopener noreferrer"
-                                        onClick={handleDownloadFinal}
                                         className="bg-white hover:bg-emerald-50 text-emerald-700 font-extrabold px-6 py-3 rounded-xl transition-all duration-300 shadow-md flex items-center gap-2 text-xs cursor-pointer select-none"
                                     >
                                         <Download className="w-4 h-4" />
